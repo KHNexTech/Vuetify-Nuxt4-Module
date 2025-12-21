@@ -15,7 +15,18 @@
     "ssr"
   ],
   "homepage": "https://github.com/KHNexTech/Vuetify-Nuxt4-Module",
-  "repository": "https://github.com/KHNexTech/Vuetify-Nuxt4-Module",
+  "author": {
+    "name": "KHNexTech",
+    "email": "chenhaitry64@gmail.com",
+    "url": "https://github.com/KHNexTech"
+  },
+  "bugs": {
+    "url": "https://github.com/KHNexTech/Vuetify-Nuxt4-Module/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KHNexTech/Vuetify-Nuxt4-Module"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {
