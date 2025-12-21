@@ -104,22 +104,17 @@ export default defineNuxtModule<ModuleOptions>({
       /* Pre-bundle vuetify for faster dev startup */
       config.optimizeDeps ??= {}
       config.optimizeDeps.include ??= []
-      config.optimizeDeps.include.push(
-        'vuetify',
-        'vuetify/lib/util/colors',
-      )
+      config.optimizeDeps.include.push('vuetify')
+
       /* ------Exclude for tree-shaking in production------ */
       config.optimizeDeps.exclude ??= []
-      config.optimizeDeps.exclude.push(
-        'vuetify/components',
-        'vuetify/directives',
-      )
+      config.optimizeDeps.exclude.push('vuetify/components', 'vuetify/directives')
 
       /* ------Enable tree-shaking------ */
-      config.esbuild ??= {}
-      if (typeof config.esbuild !== 'boolean') {
-        config.esbuild.treeShaking = true
-      }
+      // config.esbuild ??= {}
+      // if (typeof config.esbuild !== 'boolean') {
+      //   config.esbuild.treeShaking = true
+      // }
 
       /* ------Production build optimizations------ */
       config.build ??= {}
@@ -128,29 +123,9 @@ export default defineNuxtModule<ModuleOptions>({
       // Chunk splitting for better caching
       if (!Array.isArray(config.build.rollupOptions.output)) {
         config.build.rollupOptions.output ??= {}
-        const output = config.build.rollupOptions.output
-
-        output.manualChunks = (id) => {
-          // Vuetify core
-          if (id.includes('vuetify/lib/framework')) {
-            return 'vuetify-core'
-          }
-          // Vuetify components
-          if (id.includes('vuetify/lib/components')) {
-            return 'vuetify-components'
-          }
-          // Vuetify styles
-          if (id.includes('vuetify') && (id.includes('.css') || id.includes('.sass'))) {
-            return 'vuetify-styles'
-          }
-          // Other vuetify
-          if (id.includes('vuetify')) {
-            return 'vuetify'
-          }
-          // Icon fonts
-          if (id.includes('@mdi/font') || id.includes('fontawesome')) {
-            return 'icons'
-          }
+        config.build.rollupOptions.output.manualChunks = (id) => {
+          if (id.includes('vuetify')) return 'vuetify'
+          if (id.includes('@mdi/font')) return 'icons'
         }
       }
 

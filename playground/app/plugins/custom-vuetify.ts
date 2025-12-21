@@ -40,7 +40,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     if (import.meta.client) {
       const savedTheme = localStorage.getItem('theme')
       if (savedTheme) {
-        vuetify.theme.global.name.value = savedTheme
+        vuetify.theme.change(savedTheme)
       }
 
       // Watch for theme changes

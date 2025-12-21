@@ -18,6 +18,7 @@ import {
 export default defineNuxtPlugin({
   name: 'vuetify',
   enforce: 'pre',
+  parallel: true,
   async setup(nuxtApp) {
     const runtimeConfig = useRuntimeConfig().public.vuetify as VuetifyRuntimeConfig
     const { vuetifyOptions: config, persistence: persistenceOptions } = runtimeConfig
@@ -63,7 +64,7 @@ export default defineNuxtPlugin({
         const setupPersistence = () => {
           const persistedTheme = getPersistedTheme(persistenceConfig)
           if (persistedTheme && vuetify.theme.themes.value[persistedTheme]) {
-            vuetify.theme.global.name.value = persistedTheme
+            vuetify.theme.change(persistedTheme)
           }
 
           watch(
