@@ -55,7 +55,9 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit"
+    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
+    "analyze": "nuxi analyze playground",
+    "build:report": "ANALYZE=true npm run dev:build"
   },
   "dependencies": {
     "@nuxt/kit": "^4.2.2",
