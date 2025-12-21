@@ -1,0 +1,46 @@
+/**
+ * Vuetify styles with custom settings
+ * Optimized for production builds
+ */
+
+// Import Vuetify settings with custom overrides
+@use 'vuetify/settings' with (
+  // Disable unused utilities to reduce bundle size
+  $utilities: false,
+
+  // Custom component overrides
+  $button-height: 40px,
+  $button-font-size: 14px,
+
+  // Typography overrides (optional)
+  // $body-font-family: 'Inter, sans-serif',
+  // $heading-font-family: 'Inter, sans-serif'
+);
+
+// Import main Vuetify styles
+@use 'vuetify/styles';
+
+/**
+ * Custom global styles (optional)
+ * Add your custom overrides here
+ */
+
+// Example:  Custom scrollbar styling
+// : :-webkit-scrollbar {
+//   width: 8px;
+//   height: 8px;
+// }
+
+// ::-webkit-scrollbar-track {
+//   background: transparent;
+// }
+
+// ::-webkit-scrollbar-thumb {
+//   background: rgba(0, 0, 0, 0.2);
+//   border-radius:  4px;
+// }
+
+// Example: Custom transitions
+// . v-btn {
+//   transition: all 0.2s ease-in-out;
+// }
