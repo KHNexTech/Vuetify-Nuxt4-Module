@@ -78,12 +78,12 @@ export default defineNuxtModule<ModuleOptions>({
       mode: 'all',
     })
 
-    // Add composables
+    // Add Composables
     if (options.importComposables) {
       addVuetifyComposables(options.prefixComposables)
     }
 
-    // Add module composables and hooks
+    // Module imports
     addImports([
       {
         name: 'useVuetify',
@@ -99,51 +99,67 @@ export default defineNuxtModule<ModuleOptions>({
       },
     ])
 
-    /* ------Configure Vite------ */
+    /* ------Configure Vite - Vite performance optimizations------ */
     extendViteConfig((config) => {
-      /* Optimize Vuetify */
+      /* Pre-bundle vuetify for faster dev startup */
       config.optimizeDeps ??= {}
       config.optimizeDeps.include ??= []
-      config.optimizeDeps.include.push('vuetify')
-      /* ------Bundle optimizations------ */
+      config.optimizeDeps.include.push(
+        'vuetify',
+        'vuetify/lib/util/colors',
+      )
+      /* ------Exclude for tree-shaking in production------ */
       config.optimizeDeps.exclude ??= []
       config.optimizeDeps.exclude.push(
-        // 'vuetify',
         'vuetify/components',
         'vuetify/directives',
       )
 
-      /* ------Force ESBuild Tree-Shaking (Hidden Gem)------ */
-      config.esbuild ||= {}
-      config.esbuild.treeShaking = true
+      /* ------Enable tree-shaking------ */
+      config.esbuild ??= {}
+      if (typeof config.esbuild !== 'boolean') {
+        config.esbuild.treeShaking = true
+      }
 
-      /* ------Split Vuetify Into Its Own Chunk------ */
+      /* ------Production build optimizations------ */
       config.build ??= {}
       config.build.rollupOptions ??= {}
-      // Handle rollupOptions.output properly
-      const output = config.build.rollupOptions.output
-      if (output && !Array.isArray(output)) {
-        const existingManualChunks = output.manualChunks
-        output.manualChunks = (id, context) => {
-          if (id.includes('vuetify')) return 'vuetify'
 
-          // Call existing manualChunks if it's a function
-          if (typeof existingManualChunks === 'function') {
-            return existingManualChunks(id, context)
+      // Chunk splitting for better caching
+      if (!Array.isArray(config.build.rollupOptions.output)) {
+        config.build.rollupOptions.output ??= {}
+        const output = config.build.rollupOptions.output
+
+        output.manualChunks = (id) => {
+          // Vuetify core
+          if (id.includes('vuetify/lib/framework')) {
+            return 'vuetify-core'
           }
-
-          // Handle object-based manualChunks
-          if (existingManualChunks && typeof existingManualChunks === 'object') {
-            for (const [chunk, patterns] of Object.entries(existingManualChunks)) {
-              if (patterns.some((pattern: string) => id.includes(pattern))) {
-                return chunk
-              }
-            }
+          // Vuetify components
+          if (id.includes('vuetify/lib/components')) {
+            return 'vuetify-components'
           }
-
-          return undefined
+          // Vuetify styles
+          if (id.includes('vuetify') && (id.includes('.css') || id.includes('.sass'))) {
+            return 'vuetify-styles'
+          }
+          // Other vuetify
+          if (id.includes('vuetify')) {
+            return 'vuetify'
+          }
+          // Icon fonts
+          if (id.includes('@mdi/font') || id.includes('fontawesome')) {
+            return 'icons'
+          }
         }
       }
+
+      // Minification settings
+      config.build.minify = 'esbuild'
+      config.build.cssMinify = true
+
+      // Target modern browsers for smaller bundles
+      config.build.target = 'esnext'
     })
     // Transform asset URLs
     if (options.transformAssetUrls) {
@@ -154,6 +170,15 @@ export default defineNuxtModule<ModuleOptions>({
       await setupAutoImport(options.autoImport, logger)
     }
 
+    // SSR optimizations
+    if (options.vuetifyOptions.ssr) {
+      nuxt.options.vite.ssr ??= {}
+      nuxt.options.vite.ssr.noExternal ??= []
+      if (Array.isArray(nuxt.options.vite.ssr.noExternal)) {
+        nuxt.options.vite.ssr.noExternal.push('vuetify')
+      }
+    }
+    addPreloadHints(nuxt, options.vuetifyOptions.icons)
     logger.success('Vuetify module setup complete')
   },
 })
@@ -178,7 +203,7 @@ function addStyles(
   }
 }
 /*
-* Function - Add icon CSS based on icon set
+* Function - Add icon CSS based on an icon set
 */
 function addIconStyles(nuxt: Nuxt, icons?: ModuleOptions['vuetifyOptions']['icons']) {
   const defaultSet = icons?.defaultSet ?? 'mdi'
@@ -197,7 +222,7 @@ function addIconStyles(nuxt: Nuxt, icons?: ModuleOptions['vuetifyOptions']['icon
   }
 }
 /*
-* Function - Add Vuetify composables with optional prefix
+* Function - Add Vuetify composables with an optional prefix
 */
 function addVuetifyComposables(
   prefix?: boolean,
@@ -280,6 +305,25 @@ async function setupAutoImport(
       + '  npm install -D vite-plugin-vuetify',
     )
   }
+}
+
+function addPreloadHints(nuxt: Nuxt, icons?: ModuleOptions['vuetifyOptions']['icons']) {
+  const defaultSet = icons?.defaultSet ?? 'mdi'
+
+  nuxt.hook('nitro:config', (config) => {
+    config.prerender ??= {}
+    config.prerender.routes ??= []
+  })
+
+  // Add a link preload for icon fonts
+  // @ts-expect-error @ts-ignore
+  nuxt.hook('app:rendered', (ctx) => {
+    if (defaultSet === 'mdi') {
+      ctx.renderResult?.head?.push(
+        '<link rel="preload" href="/_nuxt/@mdi/font/fonts/materialdesignicons-webfont.woff2" as="font" type="font/woff2" crossorigin>',
+      )
+    }
+  })
 }
 
 // Export types
