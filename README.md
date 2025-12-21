@@ -40,11 +40,36 @@ export default defineNuxtConfig({
   modules: ['vuetify-nuxt4-module'],
 
   vuetify: {
+    moduleOptions: {
+      themePersistence: true,
+      defaultTheme: 'light',
+    },
+
     vuetifyOptions: {
-      // Vuetify options
-    }
-  }
+      theme: {
+        defaultTheme: 'light',
+        themes: {
+          light: {
+            dark: false,
+            colors: {
+              primary: '#1976D2',
+              secondary: '#424242',
+              background: '#FFFFFF',
+            },
+          },
+          dark: {
+            dark: true,
+            colors: {
+              primary: '#2196F3',
+              background: '#121212',
+            },
+          },
+        },
+      },
+    },
+  },
 })
+
 ```
 
 ## Configuration
