@@ -1,0 +1,5 @@
+playground/
+test/
+src/
+*.test.ts
+.github/
