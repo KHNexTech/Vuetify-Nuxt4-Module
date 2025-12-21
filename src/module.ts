@@ -53,6 +53,11 @@ export default defineNuxtModule<ModuleOptions>({
 
     logger.info('Setting up Vuetify module...')
 
+    // Call register hook to allow programmatic configuration
+    await nuxt.callHook('vuetify:register', (additionalOptions: Partial<ModuleOptions>) => {
+      options = defu(additionalOptions, options) as ModuleOptions
+    })
+
     // Add runtime config
     nuxt.options.runtimeConfig.public.vuetify = {
       vuetifyOptions: options.vuetifyOptions,
