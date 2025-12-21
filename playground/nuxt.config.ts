@@ -2,7 +2,28 @@ export default defineNuxtConfig({
   modules: ['../src/module'],
   ssr: true,
   devtools: { enabled: true },
+  // Performance settings
+  experimental: {
+    payloadExtraction: true,
+    renderJsonPayloads: true,
+    viewTransition: true,
+  },
   compatibilityDate: '2025-12-20',
+  nitro: {
+    compressPublicAssets: true,
+    minify: true,
+  },
+
+  vite: {
+    build: {
+      cssMinify: 'lightningcss',
+      rollupOptions: {
+        output: {
+          experimentalMinChunkSize: 10000,
+        },
+      },
+    },
+  },
   // Hook example in config
   hooks: {
     'vuetify:before-create': ({ vuetifyOptions }) => {
@@ -62,9 +83,9 @@ export default defineNuxtConfig({
     prefixComposables: false,
     transformAssetUrls: true,
     autoImport: {
-      labs: true,
+      labs: false,
     },
-    styles: true,
+    styles: 'sass',
 
     persistence: {
       enabled: true,
