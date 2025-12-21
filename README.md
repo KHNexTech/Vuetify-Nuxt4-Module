@@ -280,6 +280,66 @@ vuetify: {
 > }
 > ```
 
+## Performance Tips
+
+### 1. Use SVG Icons for Better Performance
+```typescript
+vuetify: {
+  vuetifyOptions: {
+    icons: {
+      defaultSet: 'mdi-svg' // SVG icons are tree-shaken
+    }
+  }
+}
+```
+
+### 2. Import Only Needed Icons (with mdi-svg)
+```typescript
+// plugins/vuetify-icons.ts
+import { mdiAccount, mdiHome, mdiMenu } from '@mdi/js'
+
+export default defineNuxtPlugin((nuxtApp) => {
+  onVuetifyHook(nuxtApp, 'vuetify:before-create', ({ vuetifyOptions }) => {
+    vuetifyOptions.icons = {
+      defaultSet: 'mdi-svg',
+      aliases: {
+        account: mdiAccount,
+        home: mdiHome,
+        menu: mdiMenu,
+      },
+    }
+  })
+})
+```
+
+### 3. Lazy Load Heavy Components
+```vue
+<script setup>
+// Lazy load data tables, calendars, etc.
+const VDataTable = defineAsyncComponent(() =>
+  import('vuetify/components/VDataTable').then(m => m.VDataTable)
+)
+</script>
+```
+
+### 4. Use CSS Instead of JS for Themes
+```typescript
+// nuxt.config.ts
+vuetify: {
+  styles: {
+    configFile: 'assets/vuetify.scss'
+  }
+}
+```
+
+### 5. Enable Compression
+```typescript
+// nuxt.config.ts
+nitro: {
+  compressPublicAssets: true
+}
+```
+
 ## TypeScript
 
 The module provides full TypeScript support. Types are automatically generated.
