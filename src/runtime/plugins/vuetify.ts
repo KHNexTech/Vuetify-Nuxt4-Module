@@ -32,21 +32,18 @@ export default defineNuxtPlugin({
     }
 
     // Load async configurations in parallel
-    const [blueprint, dateConfig, iconConfig] = await Promise.all([
+    const [blueprint, dateConfig, iconConfig, localConfig] = await Promise.all([
       config.blueprint ? loadBlueprint(config.blueprint) : undefined,
       config.dateAdapter ? createDateConfig(config.dateAdapter) : undefined,
       config.icons ? createIconConfig(config.icons) : createIconConfig(),
+      config.locale ? createLocaleConfig(config.locale) : createLocaleConfig(),
     ])
 
     // Apply loaded configs
     if (blueprint) vuetifyOptions.blueprint = blueprint
     if (dateConfig) vuetifyOptions.date = dateConfig
     if (iconConfig) vuetifyOptions.icons = iconConfig
-
-    // Locale is synchronous
-    if (config.locale) {
-      vuetifyOptions.locale = createLocaleConfig(config.locale)
-    }
+    if (config.locale) vuetifyOptions.locale = localConfig
 
     /// Hook: before-create
     await callVuetifyHook(nuxtApp as NuxtApp, 'vuetify:before-create', { vuetifyOptions })
@@ -57,23 +54,31 @@ export default defineNuxtPlugin({
     // Install Vuetify
     nuxtApp.vueApp.use(vuetify)
 
-    // Handle theme persistence
-    const persistenceConfig = resolvePersistenceConfig(persistenceOptions)
+    // Handle theme persistence (client-only, non-blocking)
+    if (import.meta.client) {
+      const persistenceConfig = resolvePersistenceConfig(persistenceOptions)
 
-    if (persistenceConfig.enabled && import.meta.client) {
-      // Restore persisted theme
-      const persistedTheme = getPersistedTheme(persistenceConfig)
-      if (persistedTheme && vuetify.theme.themes.value[persistedTheme]) {
-        vuetify.theme.change(persistedTheme)
+      if (persistenceConfig.enabled) {
+        // Use requestIdleCallback for non-critical work
+        const setupPersistence = () => {
+          const persistedTheme = getPersistedTheme(persistenceConfig)
+          if (persistedTheme && vuetify.theme.themes.value[persistedTheme]) {
+            vuetify.theme.global.name.value = persistedTheme
+          }
+
+          watch(
+            () => vuetify.theme.global.name.value,
+            theme => setPersistedTheme(persistenceConfig, theme),
+          )
+        }
+
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(setupPersistence)
+        }
+        else {
+          setTimeout(setupPersistence, 0)
+        }
       }
-
-      // Watch for theme changes and persist
-      watch(
-        () => vuetify.theme.global.name.value,
-        (theme) => {
-          setPersistedTheme(persistenceConfig, theme)
-        },
-      )
     }
 
     // Hook: configuration
