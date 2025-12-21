@@ -1,77 +1,289 @@
 # Vuetify Nuxt 4 Module
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![License][license-src]][license-href]
-[![Nuxt][nuxt-src]][nuxt-href]
+[![npm version](https://img.shields.io/npm/v/vuetify-nuxt4-module/latest.svg?style=flat&colorA=020420&colorB=00DC82)](https://npmjs.com/package/vuetify-nuxt4-module)
+[![npm downloads](https://img.shields.io/npm/dm/vuetify-nuxt4-module.svg?style=flat&colorA=020420&colorB=00DC82)](https://npm.chart.dev/vuetify-nuxt4-module)
+[![License](https://img.shields.io/npm/l/vuetify-nuxt4-module.svg?style=flat&colorA=020420&colorB=00DC82)](https://npmjs.com/package/vuetify-nuxt4-module)
+[![Nuxt](https://img.shields.io/badge/Nuxt-020420?logo=nuxt.js)](https://nuxt.com)
 
 Nuxt 4 module for Vuetify with theming and performance optimizations
 
-- [✨ &nbsp;Release Notes](/CHANGELOG.md)
-<!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/my-module?file=playground%2Fapp.vue) -->
-<!-- - [📖 &nbsp;Documentation](https://example.com) -->
+- [✨ Release Notes](/CHANGELOG.md)
 
 ## Features
 
-- ⚡ Auto-import with tree-shaking 
-- 🎨 Theme persistence (cookie/localStorage)
-- 🔧 Multiple date adapters 
-- 🎯 Icon sets (MDI, FA, SVG variants)
-- 🌍 Locale support with RTL 
-- 🎭 Material Design blueprints (MD1/MD2/MD3)
+- ⚡ **Auto-import** - Automatic tree-shaking with vite-plugin-vuetify
+- 🎨 **Theme Persistence** - Cookie/localStorage/sessionStorage support
+- 🔧 **Date Adapters** - Support for date-fns, dayjs, luxon, moment
+- 🎯 **Icon Sets** – MDI, FontAwesome, and SVG variants
+- 🌍 **Locale Support** – Multiple languages with RTL support
+- 🎭 **Blueprints** - Material Design MD1/MD2/MD3 presets
+- 🚀 **Performance** – Optimized chunking and tree-shaking
+- 🔌 **Hooks** – Extend Vuetify configuration via hooks
 
 ## Quick Setup
 
-Install the module to your Nuxt application with one command:
-
+Install the module:
 ```bash
-npx nuxi module add vuetify-nuxt4-module
+# npm
+npm install vuetify-nuxt4-module
+
+# pnpm
+pnpm add vuetify-nuxt4-module
+
+# yarn
+yarn add vuetify-nuxt4-module
 ```
 
-That's it! You can now use Nuxt Vuetify Module in your Nuxt app ✨
+Add to your `nuxt.config.ts`:
+```typescript
+export default defineNuxtConfig({
+  modules: ['vuetify-nuxt4-module'],
 
+  vuetify: {
+    vuetifyOptions: {
+      // Vuetify options
+    }
+  }
+})
+```
 
-## Contribution
+## Configuration
 
-<details>
-  <summary>Local development</summary>
-  
-  ```bash
-  # Install dependencies
-  npm install
-  
-  # Generate type stubs
-  npm run dev:prepare
-  
-  # Develop with the playground
-  npm run dev
-  
-  # Build the playground
-  npm run dev:build
-  
-  # Run ESLint
-  npm run lint
-  
-  # Run Vitest
-  npm run test
-  npm run test:watch
-  
-  # Release new version
-  npm run release
-  ```
+### Full Example
+```typescript
+export default defineNuxtConfig({
+  modules: ['vuetify-nuxt4-module'],
 
-</details>
+  vuetify: {
+    vuetifyOptions: {
+      ssr: true,
+      blueprint: 'md3', // 'md1' | 'md2' | 'md3'
+      dateAdapter: 'vuetify', // 'vuetify' | 'date-fns' | 'dayjs' | 'luxon' | 'moment'
 
+      icons: {
+        defaultSet: 'mdi', // 'mdi' | 'mdi-svg' | 'fa' | 'fa-svg'
+        aliases: {
+          // Custom icon aliases
+        },
+      },
 
-<!-- Badges -->
-[npm-version-src]: https://img.shields.io/npm/v/vuetify-nuxt4-module/latest.svg?style=flat&colorA=020420&colorB=00DC82
-[npm-version-href]: https://npmjs.com/package/vuetify-nuxt4-module
+      locale: {
+        locale: 'en',
+        fallback: 'en',
+        rtl: {
+          ar: true,
+        },
+      },
 
-[npm-downloads-src]: https://img.shields.io/npm/dm/vuetify-nuxt4-module.svg?style=flat&colorA=020420&colorB=00DC82
-[npm-downloads-href]: https://npm.chart.dev/vuetify-nuxt4-module
+      theme: {
+        defaultTheme: 'light',
+        themes: {
+          light: {
+            colors: {
+              primary: '#6200EE',
+              secondary: '#03DAC6',
+            },
+          },
+          dark: {
+            colors: {
+              primary: '#BB86FC',
+              secondary: '#03DAC6',
+            },
+          },
+        },
+      },
 
-[license-src]: https://img.shields.io/npm/l/vuetify-nuxt4-module.svg?style=flat&colorA=020420&colorB=00DC82
-[license-href]: https://npmjs.com/package/vuetify-nuxt4-module
+      defaults: {
+        VBtn: {
+          variant: 'elevated',
+          rounded: 'lg',
+        },
+        VCard: {
+          elevation: 4,
+        },
+      },
+    },
 
-[nuxt-src]: https://img.shields.io/badge/Nuxt-020420?logo=nuxt.js
-[nuxt-href]: https://nuxt.com
+    // Module options
+    importComposables: true,
+    prefixComposables: false, // Set true to prefix: useVTheme, useVDisplay, etc.
+    transformAssetUrls: true,
+    autoImport: true, // or { labs: true, ignore: [] }
+    styles: true, // true | 'sass' | 'none' | { configFile: 'path/to/settings.scss' }
+
+    persistence: {
+      enabled: true,
+      key: 'nuxt-vuetify-theme',
+      storage: 'cookie', // 'cookie' | 'localStorage' | 'sessionStorage'
+      cookieOptions: {
+        maxAge: 60 * 60 * 24 * 365,
+        path: '/',
+        sameSite: 'lax',
+      },
+    },
+  },
+})
+```
+
+### Options Reference
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `vuetifyOptions.ssr` | `boolean` | `true` | Enable SSR support |
+| `vuetifyOptions.blueprint` | `'md1' \| 'md2' \| 'md3'` | `'md3'` | Material Design blueprint |
+| `vuetifyOptions.dateAdapter` | `string` | `'vuetify'` | Date adapter to use |
+| `vuetifyOptions.icons` | `object` | `{ defaultSet: 'mdi' }` | Icon configuration |
+| `vuetifyOptions.locale` | `object` | - | Locale configuration |
+| `vuetifyOptions.theme` | `object` | - | Theme configuration |
+| `vuetifyOptions.defaults` | `object` | - | Component defaults |
+| `importComposables` | `boolean` | `true` | Auto-import Vuetify composables |
+| `prefixComposables` | `boolean` | `false` | Prefix composables with 'V' |
+| `transformAssetUrls` | `boolean` | `true` | Transform asset URLs in templates |
+| `autoImport` | `boolean \| object` | `true` | Enable auto-import via vite-plugin-vuetify |
+| `styles` | `boolean \| string \| object` | `true` | Style configuration |
+| `persistence` | `object` | `{ enabled: true, ... }` | Theme persistence |
+
+## Usage
+
+### Using the Composable
+```vue
+<script setup lang="ts">
+const {
+  isDark,
+  isMobile,
+  currentTheme,
+  currentBreakpoint,
+  toggleTheme,
+  setTheme,
+  setLocale,
+} = useVuetify()
+</script>
+
+<template>
+  <v-app>
+    <v-btn @click="toggleTheme">
+      {{ isDark ? 'Light' : 'Dark' }} Mode
+    </v-btn>
+  </v-app>
+</template>
+```
+
+### Using Hooks
+
+Create a plugin to hook into Vuetify lifecycle:
+```typescript
+// plugins/vuetify-custom.ts
+export default defineNuxtPlugin((nuxtApp) => {
+  // Modify options before Vuetify is created
+  onVuetifyHook(nuxtApp, 'vuetify:before-create', ({ vuetifyOptions }) => {
+    vuetifyOptions.defaults = {
+      ...vuetifyOptions.defaults,
+      VAlert: {
+        variant: 'tonal',
+      },
+    }
+  })
+
+  // Access Vuetify instance when ready
+  onVuetifyHook(nuxtApp, 'vuetify:ready', (vuetify) => {
+    console.log('Vuetify ready:', vuetify.theme.global.name.value)
+  })
+})
+```
+
+### Available Hooks
+
+| Hook | Payload | Description |
+|------|---------|-------------|
+| `vuetify:before-create` | `{ vuetifyOptions }` | Modify options before Vuetify is created |
+| `vuetify:configuration` | `{ vuetifyOptions }` | After configuration is applied |
+| `vuetify:ready` | `vuetify` | When Vuetify instance is ready |
+
+## Date Adapters
+
+To use a date adapter other than the built-in one, install the required packages:
+```bash
+# date-fns
+npm install @date-io/date-fns date-fns
+
+# dayjs
+npm install @date-io/dayjs dayjs
+
+# luxon
+npm install @date-io/luxon luxon
+
+# moment
+npm install @date-io/moment moment
+```
+
+Then configure:
+```typescript
+vuetify: {
+  vuetifyOptions: {
+    dateAdapter: 'date-fns'
+  }
+}
+```
+
+## Custom SASS Variables
+
+To customize Vuetify's SASS variables:
+
+1. Create a settings file:
+```scss
+// assets/settings.scss
+@use 'vuetify/settings' with (
+  $body-font-family: 'Inter',
+  $border-radius-root: 8px,
+  $button-height: 44px,
+);
+```
+
+2. Configure in nuxt.config.ts:
+```typescript
+vuetify: {
+  styles: {
+    configFile: 'assets/settings.scss'
+  }
+}
+```
+
+> **Note:** When using a custom config file with SSR, disable inline SSR styles:
+> ```typescript
+> experimental: {
+>   inlineSSRStyles: false
+> }
+> ```
+
+## TypeScript
+
+The module provides full TypeScript support. Types are automatically generated.
+
+## Local Development
+```bash
+# Install dependencies
+npm install
+
+# Generate type stubs
+npm run dev:prepare
+
+# Develop with the playground
+npm run dev
+
+# Build the playground
+npm run dev:build
+
+# Run ESLint
+npm run lint
+
+# Run Vitest
+npm run test
+npm run test:watch
+
+# Release new version
+npm run release
+```
+
+## License
+
+[MIT License](LICENSE)
