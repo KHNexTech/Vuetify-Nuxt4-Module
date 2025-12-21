@@ -8,7 +8,6 @@ import {
 import type { ModuleOptions } from './types'
 import type { Nuxt } from '@nuxt/schema'
 import defu from 'defu'
-import { transformAssetUrls } from 'vite-plugin-vuetify'
 
 const MODULE_NAME = 'nuxt-vuetify-module'
 
