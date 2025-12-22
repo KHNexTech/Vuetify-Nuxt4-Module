@@ -291,7 +291,7 @@ function addPreloadHints(nuxt: Nuxt, icons?: ModuleOptions['vuetifyOptions']['ic
   })
 
   // Add a link preload for icon fonts
-  // @ts-expect-error @ts-ignore
+  // @ts-expect-error @typescript-eslint/ban-ts-comment
   nuxt.hook('app:rendered', (ctx) => {
     if (defaultSet === 'mdi') {
       ctx.renderResult?.head?.push(
