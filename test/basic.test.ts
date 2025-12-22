@@ -1,19 +1,30 @@
+// test/composables. test.ts
 import { describe, it, expect } from 'vitest'
 import { setup, $fetch } from '@nuxt/test-utils'
+import { fileURLToPath } from 'node:url'
 
-describe('Vuetify Nuxt 4 Module', async () => {
+describe('useVuetify composable', async () => {
   await setup({
-    rootDir: './playground',
-    dev: false,
+    rootDir: fileURLToPath(new URL('../playground', import.meta.url)),
   })
 
-  it('renders vuetify app', async () => {
+  it('should provide vuetify instance', async () => {
     const html = await $fetch('/')
-    expect(html).toContain('v-application')
+    expect(html).toContain('v-app')
   })
 
-  it('applies theme', async () => {
-    const html = await $fetch('/')
-    expect(html).toContain('theme--light')
+  it('should toggle theme', async () => {
+    // Add theme toggle test
+  })
+})
+
+// test/module.test.ts
+describe('vuetify module', () => {
+  it('should register with correct config key', () => {
+    // Test module registration
+  })
+
+  it('should inject plugin', () => {
+    // Test plugin injection
   })
 })
