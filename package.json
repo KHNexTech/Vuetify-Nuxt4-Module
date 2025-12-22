@@ -13,6 +13,7 @@
     "tree-shaking",
     "ssr"
   ],
+  "version": "1.0.0",
   "homepage": "https://github.com/KHNexTech/Vuetify-Nuxt4-Module",
   "author": {
     "name": "KHNexTech",
@@ -132,6 +133,5 @@
     "@nuxt/test-utils": {
       "vitest": "$vitest"
     }
-  },
-  "version": "1.0.0"
+  }
 }
