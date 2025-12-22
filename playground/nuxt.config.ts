@@ -36,7 +36,7 @@ export default defineNuxtConfig({
       blueprint: 'md3',
       dateAdapter: 'vuetify',
       icons: {
-        defaultSet: 'mdi',
+        defaultSet: 'mdi-svg',
         aliases: {
           myHeart: 'mdi-heart',
         },
