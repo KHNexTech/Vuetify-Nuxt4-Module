@@ -1,0 +1,4 @@
+@use 'vuetify/settings' with (
+  $utilities: false,  // Remove utility classes (~50KB savings)
+  $color-pack: false, // Remove color utilities
+);
