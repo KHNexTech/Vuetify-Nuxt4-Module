@@ -132,5 +132,6 @@
     "@nuxt/test-utils": {
       "vitest": "$vitest"
     }
-  }
+  },
+  "version": "1.0.0"
 }
