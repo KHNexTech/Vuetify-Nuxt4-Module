@@ -1,6 +1,6 @@
 {
   "name": "vuetify-nuxt4-module",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.1",
   "description": "Nuxt 4 module for Vuetify with theming and performance optimizations",
   "keywords": [
     "nuxt",
