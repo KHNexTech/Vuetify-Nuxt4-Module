@@ -116,9 +116,23 @@ export default defineNuxtModule<ModuleOptions>({
         config.esbuild.treeShaking = true
       }
 
-      /* ------Better chunk splitting------ */
+      /* ------Build optimizations------ */
       config.build ??= {}
       config.build.rollupOptions ??= {}
+
+      // Suppress dynamic import warnings for vuetify
+      const existingOnWarn = config.build.rollupOptions.onwarn
+      config.build.rollupOptions.onwarn = (warning, warn) => {
+        if (warning.message?.includes('vuetify') && warning.message?.includes('dynamically imported')) {
+          return
+        }
+        if (existingOnWarn) {
+          existingOnWarn(warning, warn)
+        }
+        else {
+          warn(warning)
+        }
+      }
 
       // Manual chunks for better caching
       const output = config.build.rollupOptions.output
@@ -129,8 +143,12 @@ export default defineNuxtModule<ModuleOptions>({
             return 'vuetify-styles'
           }
           // Vuetify core framework
-          if (id.includes('vuetify/lib/framework') || id.includes('vuetify/lib/util')) {
+          if (id.includes('vuetify/lib/composables') || id.includes('vuetify/lib/util')) {
             return 'vuetify-core'
+          }
+          // Vuetify framework
+          if (id.includes('vuetify/lib/framework')) {
+            return 'vuetify-framework'
           }
           // Vuetify components
           if (id.includes('vuetify/lib/components')) {
@@ -144,6 +162,10 @@ export default defineNuxtModule<ModuleOptions>({
           if (id.includes('@mdi/font') || id.includes('materialdesignicons')) {
             return 'icons'
           }
+          // Vuetify styles
+          if (id.includes('vuetify') && /\.(?:css|sass|scss)$/.test(id)) {
+            return 'vuetify-styles'
+          }
           // Other vuetify
           if (id.includes('vuetify')) {
             return 'vuetify'
@@ -153,9 +175,9 @@ export default defineNuxtModule<ModuleOptions>({
 
       // Minification settings
       config.build.minify = 'esbuild'
-      config.build.cssMinify = true
+      config.build.cssMinify = 'lightningcss'
+      // config.build.cssMinify = true
       config.build.cssCodeSplit = true
-      // config.build.cssMinify = 'lightningcss'
     })
     // Transform asset URLs
     if (options.transformAssetUrls) {

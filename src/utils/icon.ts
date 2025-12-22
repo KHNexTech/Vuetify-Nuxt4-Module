@@ -8,15 +8,18 @@ const iconSetCache = new Map<string, Omit<IconOptions, 'defaultSet'>>()
 export async function loadIconSet(
   defaultSet: IconSet = 'mdi',
 ): Promise<Omit<IconOptions, 'defaultSet'>> {
-  const cached = iconSetCache.get(defaultSet)
+  const cacheKey = defaultSet ?? 'mdi'
+  const cached = iconSetCache.get(cacheKey)
   if (cached) return cached
 
   let result: Omit<IconOptions, 'defaultSet'>
 
+  // Use static imports to avoid chunk splitting issues
+  const { aliases, mdi } = await import('vuetify/iconsets/mdi-svg')
+
   switch (defaultSet) {
     case 'mdi': {
-      const { aliases, mdi } = await import('vuetify/iconsets/mdi')
-      result = { aliases, sets: { mdi } }
+      result = { aliases: aliases, sets: { mdi: mdi } }
       break
     }
     case 'mdi-svg': {
@@ -35,8 +38,7 @@ export async function loadIconSet(
       break
     }
     default: {
-      const { aliases, mdi } = await import('vuetify/iconsets/mdi')
-      result = { aliases, sets: { mdi } }
+      result = { aliases: aliases, sets: { mdi: mdi } }
     }
   }
 

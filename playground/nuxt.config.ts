@@ -37,9 +37,6 @@ export default defineNuxtConfig({
       dateAdapter: 'vuetify',
       icons: {
         defaultSet: 'mdi-svg',
-        aliases: {
-          myHeart: 'mdi-heart',
-        },
       },
       locale: {
         locale: 'en',
