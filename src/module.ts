@@ -157,6 +157,9 @@ export default defineNuxtModule<ModuleOptions>({
           if (id.includes('vuetify/lib/components/VCalendar')) {
             return 'vuetify-calendar'
           }
+          if (id.includes('VDatePicker') || id.includes('VCalendar')) return 'vuetify-date'
+          if (id.includes('VAutocomplete') || id.includes('VCombobox')) return 'vuetify-autocomplete'
+
           if (id.includes('vuetify/lib/components/VForm')
             || id.includes('vuetify/lib/components/VTextField')
             || id.includes('vuetify/lib/components/VSelect')) {
@@ -188,6 +191,7 @@ export default defineNuxtModule<ModuleOptions>({
           }
         }
       }
+      config.build.chunkSizeWarningLimit = 600
 
       // Minification settings
       config.build.minify = 'esbuild'
