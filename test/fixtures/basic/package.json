@@ -1,5 +1,14 @@
 {
   "private": true,
-  "name": "basic",
-  "type": "module"
+  "name": "nuxt-vuetify-module-playground",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "generate": "nuxi generate"
+  },
+  "dependencies": {
+    "@mdi/js": "^7.4.47",
+    "nuxt": "^4.2.2"
+  }
 }
