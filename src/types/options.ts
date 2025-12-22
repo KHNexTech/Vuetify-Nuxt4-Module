@@ -75,7 +75,7 @@ export interface ModuleOptions {
   /**
    * Vuetify instance configuration
    */
-  vuetifyOptions: Partial<Omit<VuetifyOptions, 'aliases' | 'blueprint' | 'theme' | 'icons' | 'locale'>> & VuetifyOptionsConfig
+  vuetifyOptions: Partial<Omit<VuetifyOptions, 'aliases' | 'blueprint' | 'theme' | 'icons' | 'locale'> & VuetifyOptionsConfig>
 
   /**
    * Auto-import Vuetify composables
