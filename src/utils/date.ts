@@ -42,9 +42,14 @@ export async function createDateConfig(adapterName: DateAdapterName = 'vuetify')
         config = { adapter }
         break
       }
+      case 'vuetify':
       default: {
-        const { VuetifyDateAdapter } = await import('vuetify/date/adapters/vuetify')
-        config = { adapter: VuetifyDateAdapter }
+        // const { VuetifyDateAdapter } = await import('vuetify/date/adapters/vuetify')
+        // config = { adapter: VuetifyDateAdapter }
+
+        // Don't dynamically import - use static to avoid warning
+        // The VuetifyDateAdapter is already included in a vuetify bundle
+        return undefined // Let Vuetify use its default
       }
     }
 

@@ -82,7 +82,9 @@ export default defineNuxtConfig({
     autoImport: {
       labs: false,
     },
-    styles: 'sass',
+    styles: {
+      configFile: 'assets/vuetify.scss',
+    },
 
     persistence: {
       enabled: true,

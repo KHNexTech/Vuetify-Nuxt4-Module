@@ -35,7 +35,7 @@ export default defineNuxtPlugin({
     // Load async configurations in parallel
     const [blueprint, dateConfig, iconConfig, localConfig] = await Promise.all([
       config.blueprint ? loadBlueprint(config.blueprint) : undefined,
-      config.dateAdapter ? createDateConfig(config.dateAdapter) : undefined,
+      config.dateAdapter && config.dateAdapter !== 'vuetify' ? createDateConfig(config.dateAdapter) : undefined,
       config.icons ? createIconConfig(config.icons) : createIconConfig(),
       config.locale ? createLocaleConfig(config.locale) : createLocaleConfig(),
     ])

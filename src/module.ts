@@ -150,7 +150,23 @@ export default defineNuxtModule<ModuleOptions>({
           if (id.includes('vuetify/lib/framework')) {
             return 'vuetify-framework'
           }
-          // Vuetify components
+          // Vuetify components - Split large component groups
+          if (id.includes('vuetify/lib/components/VDataTable')) {
+            return 'vuetify-datatable'
+          }
+          if (id.includes('vuetify/lib/components/VCalendar')) {
+            return 'vuetify-calendar'
+          }
+          if (id.includes('vuetify/lib/components/VForm')
+            || id.includes('vuetify/lib/components/VTextField')
+            || id.includes('vuetify/lib/components/VSelect')) {
+            return 'vuetify-forms'
+          }
+          if (id.includes('vuetify/lib/components/VNavigationDrawer')
+            || id.includes('vuetify/lib/components/VAppBar')
+            || id.includes('vuetify/lib/components/VToolbar')) {
+            return 'vuetify-navigation'
+          }
           if (id.includes('vuetify/lib/components')) {
             return 'vuetify-components'
           }
