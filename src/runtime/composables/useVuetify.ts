@@ -15,9 +15,14 @@ export function useVuetify() {
     // Computed helpers
     isDark: computed(() => $vuetify.theme.global.current.value.dark),
     isMobile: computed(() => $vuetify.display.mobile.value),
+    isSmAndDown: computed(() => $vuetify.display.smAndDown.value),
+    isMdAndUp: computed(() => $vuetify.display.mdAndUp.value),
+    isRtl: computed(() => $vuetify.locale.isRtl.value),
     currentBreakpoint: computed(() => $vuetify.display.name.value),
     currentTheme: computed(() => $vuetify.theme.global.name.value),
     currentLocale: computed(() => $vuetify.locale.current.value),
+
+    colors: computed(() => $vuetify.theme.global.current.value.colors),
 
     toggleTheme() {
       $vuetify.theme.change($vuetify.theme.global.current.value.dark ? 'light' : 'dark')
