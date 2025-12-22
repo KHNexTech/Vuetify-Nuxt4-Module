@@ -111,30 +111,51 @@ export default defineNuxtModule<ModuleOptions>({
       config.optimizeDeps.exclude.push('vuetify/components', 'vuetify/directives')
 
       /* ------Enable tree-shaking------ */
-      // config.esbuild ??= {}
-      // if (typeof config.esbuild !== 'boolean') {
-      //   config.esbuild.treeShaking = true
-      // }
+      config.esbuild ??= {}
+      if (typeof config.esbuild !== 'boolean') {
+        config.esbuild.treeShaking = true
+      }
 
-      /* ------Production build optimizations------ */
+      /* ------Better chunk splitting------ */
       config.build ??= {}
       config.build.rollupOptions ??= {}
 
-      // Chunk splitting for better caching
-      if (!Array.isArray(config.build.rollupOptions.output)) {
-        config.build.rollupOptions.output ??= {}
-        config.build.rollupOptions.output.manualChunks = (id) => {
-          if (id.includes('vuetify')) return 'vuetify'
-          if (id.includes('@mdi/font')) return 'icons'
+      // Manual chunks for better caching
+      const output = config.build.rollupOptions.output
+      if (output && !Array.isArray(output)) {
+        output.manualChunks = (id) => {
+          // Vuetify styles
+          if (id.includes('vuetify') && (id.endsWith('.css') || id.endsWith('.sass') || id.endsWith('.scss'))) {
+            return 'vuetify-styles'
+          }
+          // Vuetify core framework
+          if (id.includes('vuetify/lib/framework') || id.includes('vuetify/lib/util')) {
+            return 'vuetify-core'
+          }
+          // Vuetify components
+          if (id.includes('vuetify/lib/components')) {
+            return 'vuetify-components'
+          }
+          // Vuetify directives
+          if (id.includes('vuetify/lib/directives')) {
+            return 'vuetify-directives'
+          }
+          // Icon fonts
+          if (id.includes('@mdi/font') || id.includes('materialdesignicons')) {
+            return 'icons'
+          }
+          // Other vuetify
+          if (id.includes('vuetify')) {
+            return 'vuetify'
+          }
         }
       }
 
       // Minification settings
       config.build.minify = 'esbuild'
       config.build.cssMinify = true
-
-      // Target modern browsers for smaller bundles
-      config.build.target = 'esnext'
+      config.build.cssCodeSplit = true
+      // config.build.cssMinify = 'lightningcss'
     })
     // Transform asset URLs
     if (options.transformAssetUrls) {

@@ -3,7 +3,7 @@ import type { VuetifyHooks } from '../types'
 
 export type VuetifyHookName = keyof VuetifyHooks
 
-// Extract the first parameter type from hook function
+// Extract the first parameter type from a hook function
 type HookPayload<K extends VuetifyHookName> = Parameters<VuetifyHooks[K]>[0]
 
 // Safe function types to avoid ESLint warnings
@@ -28,7 +28,7 @@ export function callVuetifyHook<K extends VuetifyHookName>(
 export function onVuetifyHook<K extends VuetifyHookName>(
   nuxtApp: NuxtApp,
   name: K,
-  callback: (payload: HookPayload<K>) => void | Promise<void>,
+  callback: (payload: HookPayload<K>) => (void | Promise<void>),
 ): void {
   (nuxtApp.hook as HookRegistrar)(name, callback)
 }
