@@ -3,6 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/vuetify-nuxt4-module/latest.svg?style=flat&colorA=020420&colorB=00DC82)](https://npmjs.com/package/vuetify-nuxt4-module)
 [![npm downloads](https://img.shields.io/npm/dm/vuetify-nuxt4-module.svg?style=flat&colorA=020420&colorB=00DC82)](https://npm.chart.dev/vuetify-nuxt4-module)
 [![License](https://img.shields.io/npm/l/vuetify-nuxt4-module.svg?style=flat&colorA=020420&colorB=00DC82)](https://npmjs.com/package/vuetify-nuxt4-module)
+[![CI](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/actions/workflows/ci.yml/badge.svg)](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/actions/workflows/ci.yml)
 [![Nuxt](https://img.shields.io/badge/Nuxt-020420?logo=nuxt.js)](https://nuxt.com)
 
 Nuxt 4 module for Vuetify with theming and performance optimizations
