@@ -1,8 +1,15 @@
-import { useNuxtApp } from '#app'
+import { createError, useNuxtApp } from '#app'
 import { computed } from 'vue'
 
 export function useVuetify() {
   const { $vuetify } = useNuxtApp()
+
+  if (!$vuetify) {
+    throw createError({
+      statusCode: 500,
+      message: 'Vuetify is not initialized. Make sure vuetify-nuxt4-module is properly configured.',
+    })
+  }
 
   return {
     // Core
