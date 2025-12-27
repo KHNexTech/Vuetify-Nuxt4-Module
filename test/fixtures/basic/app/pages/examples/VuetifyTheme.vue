@@ -1,4 +1,3 @@
-<!-- playground/app/pages/examples/theme.vue -->
 <script setup lang="ts">
 const {
   isDark,
