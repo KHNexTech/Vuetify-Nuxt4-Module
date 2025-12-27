@@ -34,6 +34,8 @@ export default defineNuxtModule<ModuleOptions>({
     transformAssetUrls: true,
     autoImport: true,
     styles: true,
+    i18n: true,
+    lazyComponents: false,
     persistence: {
       enabled: true,
       key: 'nuxt-vuetify-theme',
@@ -61,6 +63,8 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.runtimeConfig.public.vuetify = {
       vuetifyOptions: options.vuetifyOptions,
       persistence: options.persistence,
+      i18n: options.i18n,
+      lazyComponents: options.lazyComponents,
     }
 
     // Add styles
@@ -97,6 +101,8 @@ export default defineNuxtModule<ModuleOptions>({
         name: 'offVuetifyHook',
         from: resolve('./utils/hooks'),
       },
+      { name: 'createLazyComponent',
+        from: resolve('./utils/lazy') },
     ])
 
     /* ------Configure Vite - Vite performance optimizations------ */
@@ -137,57 +143,118 @@ export default defineNuxtModule<ModuleOptions>({
       // Manual chunks for better caching
       const output = config.build.rollupOptions.output
       if (output && !Array.isArray(output)) {
-        output.manualChunks = (id) => {
-          // Vuetify styles
-          if (id.includes('vuetify') && (id.endsWith('.css') || id.endsWith('.sass') || id.endsWith('.scss'))) {
-            return 'vuetify-styles'
+        const existingManualChunks = output.manualChunks
+        output.manualChunks = (id, context) => {
+          // Vuetify data components (heavy)
+          if (
+            id.includes('VDataTable')
+            || id.includes('VDataIterator')
+            || id.includes('VVirtualScroll')
+          ) {
+            return 'vuetify-data'
           }
-          // Vuetify core framework
-          if (id.includes('vuetify/lib/composables') || id.includes('vuetify/lib/util')) {
+
+          // Vuetify date/time components
+          if (
+            id.includes('VDatePicker')
+            || id.includes('VTimePicker')
+            || id.includes('VCalendar')
+          ) {
+            return 'vuetify-datetime'
+          }
+
+          // Vuetify form components
+          if (
+            id.includes('VTextField')
+            || id.includes('VSelect')
+            || id.includes('VAutocomplete')
+            || id.includes('VCombobox')
+            || id.includes('VTextarea')
+            || id.includes('VCheckbox')
+            || id.includes('VRadio')
+            || id.includes('VSwitch')
+            || id.includes('VSlider')
+            || id.includes('VFileInput')
+            || id.includes('VForm')
+          ) {
+            return 'vuetify-forms'
+          }
+
+          // Vuetify navigation components
+          if (
+            id.includes('VAppBar')
+            || id.includes('VNavigationDrawer')
+            || id.includes('VToolbar')
+            || id.includes('VTabs')
+            || id.includes('VBreadcrumbs')
+            || id.includes('VPagination')
+          ) {
+            return 'vuetify-navigation'
+          }
+
+          // Vuetify feedback components
+          if (
+            id.includes('VAlert')
+            || id.includes('VSnackbar')
+            || id.includes('VDialog')
+            || id.includes('VBottomSheet')
+            || id.includes('VOverlay')
+            || id.includes('VProgressLinear')
+            || id.includes('VProgressCircular')
+          ) {
+            return 'vuetify-feedback'
+          }
+
+          // Vuetify layout components
+          if (
+            id.includes('VContainer')
+            || id.includes('VRow')
+            || id.includes('VCol')
+            || id.includes('VGrid')
+            || id.includes('VSpacer')
+          ) {
+            return 'vuetify-layout'
+          }
+
+          // Vuetify core utilities
+          if (
+            id.includes('vuetify/lib/composables')
+            || id.includes('vuetify/lib/util')
+          ) {
             return 'vuetify-core'
           }
+
           // Vuetify framework
           if (id.includes('vuetify/lib/framework')) {
             return 'vuetify-framework'
           }
-          // Vuetify components - Split large component groups
-          if (id.includes('vuetify/lib/components/VDataTable')) {
-            return 'vuetify-datatable'
-          }
-          if (id.includes('vuetify/lib/components/VCalendar')) {
-            return 'vuetify-calendar'
-          }
-          if (id.includes('VDatePicker') || id.includes('VCalendar')) return 'vuetify-date'
-          if (id.includes('VAutocomplete') || id.includes('VCombobox')) return 'vuetify-autocomplete'
 
-          if (id.includes('vuetify/lib/components/VForm')
-            || id.includes('vuetify/lib/components/VTextField')
-            || id.includes('vuetify/lib/components/VSelect')) {
-            return 'vuetify-forms'
-          }
-          if (id.includes('vuetify/lib/components/VNavigationDrawer')
-            || id.includes('vuetify/lib/components/VAppBar')
-            || id.includes('vuetify/lib/components/VToolbar')) {
-            return 'vuetify-navigation'
-          }
-          if (id.includes('vuetify/lib/components')) {
-            return 'vuetify-components'
-          }
           // Vuetify directives
           if (id.includes('vuetify/lib/directives')) {
             return 'vuetify-directives'
           }
-          // Icon fonts
-          if (id.includes('@mdi/font') || id.includes('materialdesignicons')) {
+
+          // Icons
+          if (id.includes('@mdi') || id.includes('materialdesignicons')) {
             return 'icons'
           }
+
           // Vuetify styles
           if (id.includes('vuetify') && /\.(?:css|sass|scss)$/.test(id)) {
             return 'vuetify-styles'
           }
+          // Remaining Vuetify components
+          if (id.includes('vuetify/lib/components')) {
+            return 'vuetify-components'
+          }
+
           // Other vuetify
           if (id.includes('vuetify')) {
             return 'vuetify'
+          }
+          // Call existing manualChunks
+          if (typeof existingManualChunks === 'function') {
+            return existingManualChunks(id, context)
           }
         }
       }
@@ -216,7 +283,19 @@ export default defineNuxtModule<ModuleOptions>({
         nuxt.options.vite.ssr.noExternal.push('vuetify')
       }
     }
-    addPreloadHints(nuxt, options.vuetifyOptions.icons)
+
+    // Preload
+    if (options.preload?.fonts) {
+      nuxt.hook('nitro:config', (config) => {
+        config.routeRules ??= {}
+        config.routeRules['/_nuxt/*.woff2'] = {
+          headers: {
+            'Cache-Control': 'public, max-age=31536000, immutable',
+          },
+        }
+      })
+    }
+
     logger.success('Vuetify module setup complete')
   },
 })
@@ -252,6 +331,7 @@ function addIconStyles(nuxt: Nuxt, icons?: ModuleOptions['vuetifyOptions']['icon
   const cssMap: Record<string, string> = {
     mdi: '@mdi/font/css/materialdesignicons.css',
     fa: '@fortawesome/fontawesome-free/css/all.css',
+    md: 'material-design-icons-iconfont/dist/material-design-icons.css',
   }
 
   const css = cssMap[defaultSet]
@@ -343,25 +423,6 @@ async function setupAutoImport(
       + '  npm install -D vite-plugin-vuetify',
     )
   }
-}
-
-function addPreloadHints(nuxt: Nuxt, icons?: ModuleOptions['vuetifyOptions']['icons']) {
-  const defaultSet = icons?.defaultSet ?? 'mdi'
-
-  nuxt.hook('nitro:config', (config) => {
-    config.prerender ??= {}
-    config.prerender.routes ??= []
-  })
-
-  // Add a link preload for icon fonts
-  // @ts-expect-error @typescript-eslint/ban-ts-comment
-  nuxt.hook('app:rendered', (ctx) => {
-    if (defaultSet === 'mdi') {
-      ctx.renderResult?.head?.push(
-        '<link rel="preload" href="/_nuxt/@mdi/font/fonts/materialdesignicons-webfont.woff2" as="font" type="font/woff2" crossorigin>',
-      )
-    }
-  })
 }
 
 // Export types

@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 export default defineNuxtConfig({
   modules: ['../../../src/module'],
   ssr: true,
@@ -26,6 +28,8 @@ export default defineNuxtConfig({
   },
   // Hook example in config
   hooks: {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     'vuetify:before-create': ({ vuetifyOptions }) => {
       console.log('Vuetify options:', vuetifyOptions)
     },

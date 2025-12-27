@@ -2,7 +2,7 @@ import type * as Components from 'vuetify/components'
 import type * as Directives from 'vuetify/directives'
 import type { IconOptions, VuetifyOptions, LocaleMessages } from 'vuetify'
 
-export type IconSet = 'mdi' | 'mdi-svg' | 'fa' | 'fa-svg'
+export type IconSet = 'mdi' | 'mdi-svg' | 'fa' | 'fa-svg' | 'md' | 'custom'
 export type BlueprintName = 'md1' | 'md2' | 'md3'
 export type DateAdapterName = 'vuetify' | 'date-fns' | 'dayjs' | 'luxon' | 'moment'
 
@@ -96,6 +96,33 @@ export interface ModuleOptions {
    * @default false
    */
   prefixComposables?: boolean
+  /**
+   * Lazy load heavy components
+   * @default false
+   */
+  lazyComponents?: boolean | {
+    /**
+     * Components to lazy load
+     * @default ['VDataTable', 'VCalendar', 'VDatePicker', 'VColorPicker']
+     */
+    components?: (
+      | 'VDataTable'
+      | 'VDataTableServer'
+      | 'VDataTableVirtual'
+      | 'VCalendar'
+      | 'VDatePicker'
+      | 'VTimePicker'
+      | 'VColorPicker'
+      | 'VVirtualScroll'
+      | 'VInfiniteScroll'
+      | 'VSparkline'
+    )[]
+    /**
+     * Delay before showing loading state (ms)
+     * @default 200
+     */
+    delay?: number
+  }
 
   /**
    * Transform asset URLs in Vuetify components
@@ -123,6 +150,28 @@ export interface ModuleOptions {
   }
 
   /**
+   * Integration with vue-i18n for Vuetify locale
+   * Auto-detects and integrates vue-i18n when available
+   * Set to false to disable
+   * @default true (auto-detect)
+   */
+  i18n?: boolean | {
+    /**
+     * Use vue-i18n adapter for Vuetify locale
+     * @default true
+     */
+    useVueI18nAdapter?: boolean
+  }
+  /**
+   * Preload critical assets
+   * @default { fonts: false, criticalCSS: true }
+   */
+  preload?: {
+    fonts?: boolean
+    criticalCSS?: boolean
+  }
+
+  /**
    * Theme persistence configuration
    * @default { enabled: true, storage: 'cookie', key: 'nuxt-vuetify-theme' }
    */
@@ -133,6 +182,8 @@ export interface ModuleOptions {
 export interface VuetifyRuntimeConfig {
   vuetifyOptions: ModuleOptions['vuetifyOptions']
   persistence?: PersistenceConfig
+  i18n?: ModuleOptions['i18n']
+  lazyComponents?: ModuleOptions['lazyComponents']
 }
 
 // ============================================

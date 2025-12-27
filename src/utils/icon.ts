@@ -37,6 +37,16 @@ export async function loadIconSet(
       result = { aliases, sets: { fa } }
       break
     }
+    case 'md': {
+      const { aliases, md } = await import('vuetify/iconsets/md')
+      result = { aliases, sets: { md } }
+      break
+    }
+    case 'custom': {
+      // Return empty, user provides via hooks
+      result = { aliases: {}, sets: {} }
+      break
+    }
     default: {
       result = { aliases: aliases, sets: { mdi: mdi } }
     }

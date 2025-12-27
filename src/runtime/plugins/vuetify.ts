@@ -13,6 +13,9 @@ import {
   resolvePersistenceConfig,
   getPersistedTheme,
   setPersistedTheme,
+  createI18nLocaleAdapter,
+  isI18nEnabled,
+  registerLazyComponents,
 } from '../../utils'
 
 export default defineNuxtPlugin({
@@ -21,7 +24,7 @@ export default defineNuxtPlugin({
   parallel: true,
   async setup(nuxtApp) {
     const runtimeConfig = useRuntimeConfig().public.vuetify as VuetifyRuntimeConfig
-    const { vuetifyOptions: config, persistence: persistenceOptions } = runtimeConfig
+    const { vuetifyOptions: config, persistence: persistenceOptions, i18n: i18nOption, lazyComponents: lazy } = runtimeConfig
     logger.debug('Initializing Vuetify...')
 
     // Build options
@@ -33,18 +36,27 @@ export default defineNuxtPlugin({
     }
 
     // Load async configurations in parallel
-    const [blueprint, dateConfig, iconConfig, localConfig] = await Promise.all([
+    const [blueprint, dateConfig, iconConfig, localeConfig, i18nLocaleAdapter] = await Promise.all([
       config.blueprint ? loadBlueprint(config.blueprint) : undefined,
       config.dateAdapter && config.dateAdapter !== 'vuetify' ? createDateConfig(config.dateAdapter) : undefined,
       config.icons ? createIconConfig(config.icons) : createIconConfig(),
       config.locale ? createLocaleConfig(config.locale) : createLocaleConfig(),
+      isI18nEnabled(i18nOption) ? createI18nLocaleAdapter() : undefined,
     ])
-
     // Apply loaded configs
     if (blueprint) vuetifyOptions.blueprint = blueprint
     if (dateConfig) vuetifyOptions.date = dateConfig
     if (iconConfig) vuetifyOptions.icons = iconConfig
-    if (config.locale) vuetifyOptions.locale = localConfig
+    // Apply locale config - i18n adapter takes precedence over default locale config
+    if (i18nLocaleAdapter) {
+      // i18n adapter successfully created
+      vuetifyOptions.locale = i18nLocaleAdapter
+      logger.debug('Using vue-i18n adapter for Vuetify locale')
+    }
+    else if (localeConfig) {
+      // Use default locale config if i18n not enabled or failed
+      vuetifyOptions.locale = localeConfig
+    }
 
     /// Hook: before-create
     await callVuetifyHook(nuxtApp as NuxtApp, 'vuetify:before-create', { vuetifyOptions })
@@ -54,6 +66,19 @@ export default defineNuxtPlugin({
 
     // Install Vuetify
     nuxtApp.vueApp.use(vuetify)
+
+    // Lazy Components
+    if (lazy) {
+      const lazyConfig = typeof lazy === 'object'
+        ? lazy
+        : {}
+
+      registerLazyComponents(
+        nuxtApp.vueApp,
+        lazyConfig?.components,
+        { delay: lazyConfig.delay },
+      )
+    }
 
     // Handle theme persistence (client-only, non-blocking)
     if (import.meta.client) {
