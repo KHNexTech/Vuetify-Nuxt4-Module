@@ -30,6 +30,13 @@ export default defineNuxtConfig({
       console.log('Vuetify options:', vuetifyOptions)
     },
   },
+  i18n: {
+    defaultLocale: 'en',
+    locales: [
+      { code: 'en', name: 'English', file: 'en.js' },
+      { code: 'km', name: 'ភាសាខ្មែរ', file: 'kh.js' },
+    ],
+  },
   vuetify: {
     vuetifyOptions: {
       ssr: true,
