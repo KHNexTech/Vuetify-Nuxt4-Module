@@ -17,7 +17,7 @@ export function generatePreloadLinks(config: PreloadConfig = {}): string[] {
   return links
 }
 
-export function injectPreloadHints(head: any, config: PreloadConfig): void {
+export function injectPreloadHints(head: string[], config: PreloadConfig): void {
   const links = generatePreloadLinks(config)
 
   for (const link of links) {

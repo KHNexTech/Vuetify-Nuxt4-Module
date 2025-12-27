@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['../src/module'],
+  modules: ['../src/module', '@nuxtjs/i18n'],
   ssr: true,
   devtools: { enabled: true },
   // Performance settings

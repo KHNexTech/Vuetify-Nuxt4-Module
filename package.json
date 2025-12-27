@@ -1,36 +1,27 @@
 {
   "name": "vuetify-nuxt4-module",
-  "description": "Nuxt 4 module for Vuetify with theming and performance optimizations",
+  "version": "1.1.0",
+  "description": "Zero-config Vuetify 3 module for Nuxt 4 with performance optimizations.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KHNexTech/Vuetify-Nuxt4-Module.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KHNexTech/Vuetify-Nuxt4-Module/issues"
+  },
+  "homepage": "https://github.com/KHNexTech/Vuetify-Nuxt4-Module",
+  "author": "KHNexTech",
+  "license": "MIT",
   "keywords": [
     "nuxt",
     "nuxt4",
     "nuxt-module",
     "vuetify",
     "vuetify3",
-    "material-design-3",
-    "ui-framework",
-    "component-library",
-    "vue",
     "vue3",
     "material-design",
-    "tree-shaking",
-    "ssr"
+    "ui-framework"
   ],
-  "version": "1.1.0",
-  "homepage": "https://github.com/KHNexTech/Vuetify-Nuxt4-Module",
-  "author": {
-    "name": "KHNexTech",
-    "email": "chenhaitry64@gmail.com",
-    "url": "https://github.com/KHNexTech"
-  },
-  "bugs": {
-    "url": "https://github.com/KHNexTech/Vuetify-Nuxt4-Module/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/KHNexTech/Vuetify-Nuxt4-Module"
-  },
-  "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
@@ -104,7 +95,8 @@
     "moment": "^2.30.1",
     "nuxt": "^4.2.2",
     "vite-plugin-vuetify": "^2.1.2",
-    "vuetify": "^3.11.3"
+    "vuetify": "^3.11.3",
+    "vue-i18n": "^11.1.10"
   },
   "peerDependenciesMeta": {
     "@date-io/date-fns": {
@@ -129,6 +121,9 @@
       "optional": true
     },
     "moment": {
+      "optional": true
+    },
+    "vue-i18n": {
       "optional": true
     }
   },
