@@ -43,7 +43,7 @@ export default defineNuxtConfig({
       blueprint: 'md3',
       dateAdapter: 'vuetify',
       icons: {
-        defaultSet: 'mdi-svg',
+        defaultSet: 'mdi',
       },
       locale: {
         locale: 'en',
