@@ -13,7 +13,6 @@ import {
   resolvePersistenceConfig,
   getPersistedTheme,
   setPersistedTheme,
-  createI18nLocaleAdapter,
   isI18nEnabled,
   registerLazyComponents,
 } from '../../utils'
@@ -36,25 +35,43 @@ export default defineNuxtPlugin({
     }
 
     // Load async configurations in parallel
-    const [blueprint, dateConfig, iconConfig, localeConfig, i18nLocaleAdapter] = await Promise.all([
+    const [blueprint, dateConfig, iconConfig, localeConfig] = await Promise.all([
       config.blueprint ? loadBlueprint(config.blueprint) : undefined,
       config.dateAdapter && config.dateAdapter !== 'vuetify' ? createDateConfig(config.dateAdapter) : undefined,
       config.icons ? createIconConfig(config.icons) : createIconConfig(),
       config.locale ? createLocaleConfig(config.locale) : createLocaleConfig(),
-      isI18nEnabled(i18nOption) ? createI18nLocaleAdapter() : undefined,
     ])
+
     // Apply loaded configs
     if (blueprint) vuetifyOptions.blueprint = blueprint
     if (dateConfig) vuetifyOptions.date = dateConfig
     if (iconConfig) vuetifyOptions.icons = iconConfig
+
+    // Handle i18n adapter - only on client side to avoid hydration mismatch
+    let i18nLocaleAdapter
+    if (isI18nEnabled(i18nOption) && import.meta.client) {
+      try {
+        // Get i18n instance from nuxt app - @nuxtjs/i18n provides it as $i18n
+        const i18nInstance = (nuxtApp as any).$i18n
+        if (i18nInstance?.global) {
+          const { createVueI18nAdapter } = await import('vuetify/locale/adapters/vue-i18n')
+          const { useI18n } = await import('vue-i18n')
+
+          i18nLocaleAdapter = {
+            adapter: createVueI18nAdapter({ i18n: i18nInstance, useI18n }),
+          }
+          logger.debug('Using vue-i18n adapter for Vuetify locale')
+        }
+      }
+      catch (error) {
+        logger.debug('Failed to create i18n locale adapter:', error)
+      }
+    }
     // Apply locale config - i18n adapter takes precedence over default locale config
     if (i18nLocaleAdapter) {
-      // i18n adapter successfully created
       vuetifyOptions.locale = i18nLocaleAdapter
-      logger.debug('Using vue-i18n adapter for Vuetify locale')
     }
     else if (localeConfig) {
-      // Use default locale config if i18n not enabled or failed
       vuetifyOptions.locale = localeConfig
     }
 

@@ -15,7 +15,7 @@ export async function loadIconSet(
   let result: Omit<IconOptions, 'defaultSet'>
 
   // Use static imports to avoid chunk splitting issues
-  const { aliases, mdi } = await import('vuetify/iconsets/mdi-svg')
+  const { aliases, mdi } = await import('vuetify/iconsets/mdi')
 
   switch (defaultSet) {
     case 'mdi': {

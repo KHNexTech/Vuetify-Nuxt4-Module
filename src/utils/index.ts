@@ -4,7 +4,7 @@ export { createIconConfig, loadIconSet } from './icon'
 export { createLocaleConfig } from './locale'
 export { createDateConfig } from './date'
 export { loadBlueprint } from './blueprints'
-export { createI18nLocaleAdapter, isI18nEnabled } from './i18n'
+export { createI18nLocaleAdapter, hasI18nModule, isI18nEnabled, tryCreateI18nLocaleAdapter } from './i18n'
 export {
   createLazyComponent,
   registerLazyComponents,
