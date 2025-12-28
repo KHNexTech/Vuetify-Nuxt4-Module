@@ -3,3 +3,4 @@ import './runtime'
 
 export * from './options'
 export * from './hooks'
+export * from './icon'

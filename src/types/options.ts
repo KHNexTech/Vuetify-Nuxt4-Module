@@ -1,8 +1,8 @@
 import type * as Components from 'vuetify/components'
 import type * as Directives from 'vuetify/directives'
-import type { IconOptions, VuetifyOptions, LocaleMessages } from 'vuetify'
+import type { VuetifyOptions, LocaleMessages } from 'vuetify'
+import type { IconConfig } from '../types'
 
-export type IconSet = 'mdi' | 'mdi-svg' | 'fa' | 'fa-svg' | 'md' | 'custom'
 export type BlueprintName = 'md1' | 'md2' | 'md3'
 export type DateAdapterName = 'vuetify' | 'date-fns' | 'dayjs' | 'luxon' | 'moment'
 
@@ -31,11 +31,7 @@ export interface VuetifyOptionsConfig {
   /**
    * Icon configuration
    */
-  icons?: {
-    defaultSet?: IconSet
-    aliases?: IconOptions['aliases']
-    sets?: IconOptions['sets']
-  }
+  icons?: IconConfig
 
   /**
    * Locale configuration

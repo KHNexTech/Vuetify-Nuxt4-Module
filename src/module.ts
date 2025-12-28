@@ -8,6 +8,7 @@ import {
 import type { ModuleOptions } from './types'
 import type { Nuxt } from '@nuxt/schema'
 import defu from 'defu'
+import { getIconCssPath } from './utils'
 
 const MODULE_NAME = 'nuxt-vuetify-module'
 
@@ -325,16 +326,7 @@ function addStyles(
 function addIconStyles(nuxt: Nuxt, icons?: ModuleOptions['vuetifyOptions']['icons']) {
   const defaultSet = icons?.defaultSet ?? 'mdi'
 
-  // Skip SVG sets
-  if (defaultSet.includes('svg')) return
-
-  const cssMap: Record<string, string> = {
-    mdi: '@mdi/font/css/materialdesignicons.css',
-    fa: '@fortawesome/fontawesome-free/css/all.css',
-    md: 'material-design-icons-iconfont/dist/material-design-icons.css',
-  }
-
-  const css = cssMap[defaultSet]
+  const css = getIconCssPath(defaultSet)
   if (css && !nuxt.options.css.includes(css)) {
     nuxt.options.css.push(css)
   }

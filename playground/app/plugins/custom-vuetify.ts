@@ -17,7 +17,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   // Modify options before Vuetify is created
   onVuetifyHook(nuxtApp as NuxtApp, 'vuetify:before-create', ({ vuetifyOptions }) => {
-    console.log('Before create:', vuetifyOptions)
+    // console.log('Before create:', vuetifyOptions)
 
     // Add custom defaults
     vuetifyOptions.defaults = {

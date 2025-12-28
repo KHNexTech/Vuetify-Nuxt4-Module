@@ -14,8 +14,15 @@ import {
   getPersistedTheme,
   setPersistedTheme,
   isI18nEnabled,
+  createI18nLocaleAdapter,
   registerLazyComponents,
 } from '../../utils'
+import type { I18n } from 'vue-i18n'
+
+// Extended NuxtApp interface for i18n
+interface NuxtAppWithI18n extends NuxtApp {
+  $i18n?: I18n
+}
 
 export default defineNuxtPlugin({
   name: 'vuetify',
@@ -23,7 +30,13 @@ export default defineNuxtPlugin({
   parallel: true,
   async setup(nuxtApp) {
     const runtimeConfig = useRuntimeConfig().public.vuetify as VuetifyRuntimeConfig
-    const { vuetifyOptions: config, persistence: persistenceOptions, i18n: i18nOption, lazyComponents: lazy } = runtimeConfig
+    const {
+      vuetifyOptions: config,
+      persistence: persistenceOptions,
+      i18n: i18nOption,
+      lazyComponents: lazy,
+    } = runtimeConfig
+
     logger.debug('Initializing Vuetify...')
 
     // Build options
@@ -49,22 +62,18 @@ export default defineNuxtPlugin({
 
     // Handle i18n adapter - only on client side to avoid hydration mismatch
     let i18nLocaleAdapter
-    if (isI18nEnabled(i18nOption) && import.meta.client) {
+    if (isI18nEnabled(i18nOption)) {
       try {
-        // Get i18n instance from nuxt app - @nuxtjs/i18n provides it as $i18n
-        const i18nInstance = (nuxtApp as any).$i18n
-        if (i18nInstance?.global) {
-          const { createVueI18nAdapter } = await import('vuetify/locale/adapters/vue-i18n')
-          const { useI18n } = await import('vue-i18n')
-
-          i18nLocaleAdapter = {
-            adapter: createVueI18nAdapter({ i18n: i18nInstance, useI18n }),
-          }
-          logger.debug('Using vue-i18n adapter for Vuetify locale')
+        // Get i18n instance from nuxt app
+        // @nuxtjs/i18n provides it as $i18n
+        const appWithI18n = nuxtApp as NuxtAppWithI18n
+        const i18nInstance = appWithI18n.$i18n
+        if (i18nInstance) {
+          i18nLocaleAdapter = await createI18nLocaleAdapter(i18nInstance)
         }
       }
       catch (error) {
-        logger.debug('Failed to create i18n locale adapter:', error)
+        logger.debug('i18n adapter creation skipped:', error)
       }
     }
     // Apply locale config - i18n adapter takes precedence over default locale config
