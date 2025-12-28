@@ -1,4 +1,3 @@
-// src/runtime/utils/persistence.ts
 import type { PersistenceConfig } from '../types'
 
 export interface ResolvedPersistenceConfig {
@@ -26,7 +25,11 @@ export function resolvePersistenceConfig(
     },
   }
 }
-
+/**
+ * Get persisted theme from storage
+ * Note: For SSR with cookies, use useCookie() from #app instead
+ * This function only works on client-side
+ */
 export function getPersistedTheme(config: ResolvedPersistenceConfig): string | null {
   if (!config.enabled || !import.meta.client) return null
 
@@ -45,7 +48,10 @@ export function getPersistedTheme(config: ResolvedPersistenceConfig): string | n
     return null
   }
 }
-
+/**
+ * Set persisted theme to storage
+ * Note: For SSR with cookies, also update via useCookie() from #app
+ */
 export function setPersistedTheme(config: ResolvedPersistenceConfig, theme: string): void {
   if (!config.enabled || !import.meta.client) return
 
@@ -60,6 +66,31 @@ export function setPersistedTheme(config: ResolvedPersistenceConfig, theme: stri
       case 'cookie':
       default:
         setCookie(config.key, theme, config.cookieOptions)
+    }
+  }
+  catch {
+    // Silently fail
+  }
+}
+
+/**
+ * Clear persisted theme from storage
+ */
+export function clearPersistedTheme(config: ResolvedPersistenceConfig): void {
+  if (!config.enabled || !import.meta.client) return
+
+  try {
+    switch (config.storage) {
+      case 'localStorage':
+        localStorage.removeItem(config.key)
+        break
+      case 'sessionStorage':
+        sessionStorage.removeItem(config.key)
+        break
+      case 'cookie':
+      default:
+        // Set cookie with expired date to delete it
+        document.cookie = `${config.key}=; max-age=0; path=${config.cookieOptions.path}`
     }
   }
   catch {

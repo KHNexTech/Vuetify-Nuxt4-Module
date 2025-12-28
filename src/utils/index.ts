@@ -26,6 +26,7 @@ export {
   resolvePersistenceConfig,
   getPersistedTheme,
   setPersistedTheme,
+  clearPersistedTheme,
 } from './persistence'
 export {
   generatePreloadLinks,

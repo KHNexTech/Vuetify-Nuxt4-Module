@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, type NuxtApp, useRuntimeConfig } from '#app'
+import { defineNuxtPlugin, type NuxtApp, useCookie, useRuntimeConfig } from '#app'
 import { createVuetify } from 'vuetify'
 import { watch } from 'vue'
 import type { VuetifyOptions } from 'vuetify'
@@ -39,10 +39,31 @@ export default defineNuxtPlugin({
 
     logger.debug('Initializing Vuetify...')
 
+    // Resolve persistence config
+    const persistenceConfig = resolvePersistenceConfig(persistenceOptions)
+
+    // Get persisted theme BEFORE creating Vuetify (works on both SSR and client)
+    let initialTheme = config.theme?.defaultTheme ?? 'light'
+
+    if (persistenceConfig.enabled && persistenceConfig.storage === 'cookie') {
+      const themeCookie = useCookie<string>(persistenceConfig.key, {
+        maxAge: persistenceConfig.cookieOptions?.maxAge,
+        path: persistenceConfig.cookieOptions?.path,
+        sameSite: persistenceConfig.cookieOptions?.sameSite as 'lax' | 'strict' | 'none',
+      })
+
+      if (themeCookie.value) {
+        initialTheme = themeCookie.value
+      }
+    }
+
     // Build options
     const vuetifyOptions: VuetifyOptions = {
       ssr: config.ssr ?? true,
-      theme: config.theme,
+      theme: {
+        ...config.theme,
+        defaultTheme: initialTheme,
+      },
       defaults: config.defaults,
       aliases: config.aliases as VuetifyOptions['aliases'],
     }
@@ -106,29 +127,31 @@ export default defineNuxtPlugin({
       )
     }
 
-    // Handle theme persistence (client-only, non-blocking)
-    if (import.meta.client) {
-      const persistenceConfig = resolvePersistenceConfig(persistenceOptions)
+    // Handle theme persistence watcher (client-only)
+    if (import.meta.client && persistenceConfig.enabled) {
+      // Watch for theme changes and persist them
+      watch(
+        () => vuetify.theme.global.name.value,
+        (theme) => {
+          setPersistedTheme(persistenceConfig, theme)
 
-      if (persistenceConfig.enabled) {
-        // Use requestIdleCallback for non-critical work
-        const setupPersistence = () => {
-          const persistedTheme = getPersistedTheme(persistenceConfig)
-          if (persistedTheme && vuetify.theme.themes.value[persistedTheme]) {
-            vuetify.theme.change(persistedTheme)
+          // Also update the cookie for SSR
+          if (persistenceConfig.storage === 'cookie') {
+            const themeCookie = useCookie<string>(persistenceConfig.key, {
+              maxAge: persistenceConfig.cookieOptions?.maxAge,
+              path: persistenceConfig.cookieOptions?.path,
+              sameSite: persistenceConfig.cookieOptions?.sameSite as 'lax' | 'strict' | 'none',
+            })
+            themeCookie.value = theme
           }
+        },
+      )
 
-          watch(
-            () => vuetify.theme.global.name.value,
-            theme => setPersistedTheme(persistenceConfig, theme),
-          )
-        }
-
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(setupPersistence)
-        }
-        else {
-          setTimeout(setupPersistence, 0)
+      // Handle localStorage persistence (client-only read)
+      if (persistenceConfig.storage === 'localStorage') {
+        const storedTheme = localStorage.getItem(persistenceConfig.key)
+        if (storedTheme && vuetify.theme.themes.value[storedTheme]) {
+          vuetify.theme.global.name.value = storedTheme
         }
       }
     }
