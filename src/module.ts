@@ -103,12 +103,16 @@ export default defineNuxtModule<ModuleOptions>({
     ])
 
     // Setup Vuetify auto-import with vite-plugin-vuetify
-    // This handles component CSS automatically when autoImport is enabled
     const useVitePlugin = options.autoImport !== false
-    let vitePluginStyles: true | 'none' | 'sass' | { configFile: string } = 'none'
 
     if (options.autoImport && useVitePlugin) {
-      // Determine styles configuration for vite-plugin-vuetify
+      // vite-plugin-vuetify styles options:
+      // - true: use precompiled CSS (default)
+      // - 'none': no styles (you must import manually)
+      // - 'sass': use SASS source files
+      // - { configFile: string }: custom SASS config file
+      let vitePluginStyles: true | 'none' | 'sass' | { configFile: string } = 'none'
+
       if (typeof options.styles === 'object' && options.styles.configFile) {
         vitePluginStyles = { configFile: options.styles.configFile }
       }
@@ -116,10 +120,17 @@ export default defineNuxtModule<ModuleOptions>({
         vitePluginStyles = 'sass'
       }
       else if (options.styles === true || options.styles === undefined) {
-        vitePluginStyles = true
+        // Use 'none' and manually add styles to prevent duplicates
+        // vite-plugin-vuetify with styles: true can cause duplicate CSS in SSR
+        vitePluginStyles = 'none'
       }
 
       await setupAutoImport(options.autoImport, vitePluginStyles, logger)
+
+      // Manually add Vuetify styles (prevents duplicates better than vite-plugin-vuetify)
+      if (options.styles !== 'none') {
+        addStyles(nuxt, options.styles)
+      }
     }
     else {
       // Only add styles manually if NOT using vite-plugin-vuetify
@@ -425,7 +436,8 @@ async function setupAutoImport(
           ignore: autoImport.ignore ?? [],
         }
 
-    // vite-plugin-vuetify handles both auto-import AND styles
+    // vite-plugin-vuetify handles auto-import
+    // styles: 'none' means we handle styles ourselves via nuxt.options.css
     addVitePlugin(vuetifyPlugin({
       autoImport: autoImportConfig,
       styles,
