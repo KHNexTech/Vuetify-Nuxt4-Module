@@ -1,5 +1,3 @@
-// playground/plugins/custom-vuetify.ts
-
 import type { NuxtApp } from '#app'
 
 export default defineNuxtPlugin((nuxtApp) => {
