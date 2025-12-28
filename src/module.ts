@@ -3,7 +3,9 @@ import {
   addPlugin,
   addImports,
   createResolver,
-  useLogger, extendViteConfig, addVitePlugin,
+  useLogger,
+  extendViteConfig,
+  addVitePlugin,
 } from '@nuxt/kit'
 import type { ModuleOptions } from './types'
 import type { Nuxt } from '@nuxt/schema'
@@ -68,12 +70,6 @@ export default defineNuxtModule<ModuleOptions>({
       lazyComponents: options.lazyComponents,
     }
 
-    // Add styles
-    addStyles(nuxt, options.styles)
-
-    // Add icon CSS
-    addIconStyles(nuxt, options.vuetifyOptions.icons)
-
     // Transpile vuetify
     nuxt.options.build.transpile.push('vuetify')
 
@@ -105,6 +101,33 @@ export default defineNuxtModule<ModuleOptions>({
       { name: 'createLazyComponent',
         from: resolve('./utils/lazy') },
     ])
+
+    // Setup Vuetify auto-import with vite-plugin-vuetify
+    // This handles component CSS automatically when autoImport is enabled
+    const useVitePlugin = options.autoImport !== false
+    let vitePluginStyles: true | 'none' | 'sass' | { configFile: string } = 'none'
+
+    if (options.autoImport && useVitePlugin) {
+      // Determine styles configuration for vite-plugin-vuetify
+      if (typeof options.styles === 'object' && options.styles.configFile) {
+        vitePluginStyles = { configFile: options.styles.configFile }
+      }
+      else if (options.styles === 'sass') {
+        vitePluginStyles = 'sass'
+      }
+      else if (options.styles === true || options.styles === undefined) {
+        vitePluginStyles = true
+      }
+
+      await setupAutoImport(options.autoImport, vitePluginStyles, logger)
+    }
+    else {
+      // Only add styles manually if NOT using vite-plugin-vuetify
+      addStyles(nuxt, options.styles)
+    }
+
+    // Add icon CSS (only for font-based icons)
+    addIconStyles(nuxt, options.vuetifyOptions.icons)
 
     /* ------Configure Vite - Vite performance optimizations------ */
     extendViteConfig((config) => {
@@ -264,16 +287,11 @@ export default defineNuxtModule<ModuleOptions>({
       // Minification settings
       config.build.minify = 'esbuild'
       config.build.cssMinify = 'lightningcss'
-      // config.build.cssMinify = true
       config.build.cssCodeSplit = true
     })
     // Transform asset URLs
     if (options.transformAssetUrls) {
       await setupTransformAssetUrls(nuxt)
-    }
-    // Auto-import configuration
-    if (options.autoImport) {
-      await setupAutoImport(options.autoImport, logger)
     }
 
     // SSR optimizations
@@ -309,15 +327,15 @@ function addStyles(
 ) {
   if ((typeof styles === 'boolean' && !styles) || styles === 'none') return
 
-  if (typeof styles === 'object' && styles.configFile) {
-    // Custom SASS config file
-    nuxt.options.css.unshift(styles.configFile)
-  }
-  else if (styles === 'sass') {
-    nuxt.options.css.unshift('vuetify/styles/main.sass')
-  }
-  else {
-    nuxt.options.css.unshift('vuetify/styles')
+  const cssToAdd = typeof styles === 'object' && styles.configFile
+    ? styles.configFile
+    : styles === 'sass'
+      ? 'vuetify/styles/main.sass'
+      : 'vuetify/styles'
+
+  // Prevent duplicates
+  if (!nuxt.options.css.includes(cssToAdd)) {
+    nuxt.options.css.unshift(cssToAdd)
   }
 }
 /*
@@ -389,25 +407,29 @@ async function setupTransformAssetUrls(nuxt: Nuxt) {
 }
 
 /*
-* Function - Setup Vuetify auto-import with vite-plugin-vuetify
-* components and directives auto-import
-*/
+ * Function - Setup Vuetify auto-import with vite-plugin-vuetify
+ * components and directives auto-import
+ */
 async function setupAutoImport(
   autoImport: NonNullable<ModuleOptions['autoImport']>,
+  styles: true | 'none' | 'sass' | { configFile: string },
   logger: ReturnType<typeof useLogger>,
 ) {
   try {
     const vuetifyPlugin = await import('vite-plugin-vuetify').then(m => m.default)
 
-    const autoImportConfig
-      = typeof autoImport === 'boolean'
-        ? autoImport
-        : {
-            labs: autoImport.labs ?? false,
-            ignore: autoImport.ignore ?? [],
-          }
+    const autoImportConfig = typeof autoImport === 'boolean'
+      ? autoImport
+      : {
+          labs: autoImport.labs ?? false,
+          ignore: autoImport.ignore ?? [],
+        }
 
-    addVitePlugin(vuetifyPlugin({ autoImport: autoImportConfig }))
+    // vite-plugin-vuetify handles both auto-import AND styles
+    addVitePlugin(vuetifyPlugin({
+      autoImport: autoImportConfig,
+      styles,
+    }))
   }
   catch {
     logger.warn(

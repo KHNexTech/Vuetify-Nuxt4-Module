@@ -11,7 +11,6 @@ import {
   createDateConfig,
   loadBlueprint,
   resolvePersistenceConfig,
-  getPersistedTheme,
   setPersistedTheme,
   isI18nEnabled,
   createI18nLocaleAdapter,
