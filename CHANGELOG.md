@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.2.2
+
+[compare changes](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/compare/v1.2.1...v1.2.2)
+
+### 🏡 Chore
+
+- Replace Vuetify module archive and cleanup old files ([5aa65df](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/5aa65df))
+- **docs:** Add comprehensive documentation for composables, configuration, and i18n integration ([8c21a99](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/8c21a99))
+
+### ❤️ Contributors
+
+- Chenhai <chenhaitry64@gmail.com>
+
 ## v1.2.1
 
 [compare changes](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/compare/v1.2.0...v1.2.1)
