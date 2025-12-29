@@ -14,7 +14,7 @@ We actively provide security updates for the following versions of `vuetify-nuxt
 We take the security of this module seriously. If you discover a security vulnerability within this project, please follow the steps below to report it:
 
 1.  **Do not open a public issue.** Publicly disclosing a vulnerability can put users at risk.
-2.  **Email us directly.** Please send a detailed report to the maintainers at [your-email@example.com](mailto:your-email@example.com) (or use the GitHub "Report a vulnerability" feature if enabled).
+2.  **Email us directly.** Please send a detailed report to the maintainers at [chenhaitry64@gmail.com](mailto:chenhaitry64@gmail.com) (or use the GitHub "Report a vulnerability" feature if enabled).
 3.  **Provide details.** Include as much information as possible, such as:
     *   A description of the vulnerability.
     *   Steps to reproduce the issue.

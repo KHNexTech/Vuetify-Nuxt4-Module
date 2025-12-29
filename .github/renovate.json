@@ -1,14 +1,23 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    "group:allNonMajor"
+  ],
+  "schedule": ["before 8am on monday"],
+  "rangeStrategy": "bump",
   "packageRules": [
     {
       "matchDepTypes": ["devDependencies"],
-      "automerge": true
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "stabilityDays": 3
     },
     {
-      "matchPackagePatterns": ["nuxt", "vuetify"],
-      "groupName": "core dependencies"
+      "matchPackagePatterns": ["^nuxt$", "^@nuxt/", "^vuetify$"],
+      "groupName": "core dependencies (nuxt/vuetify)"
     }
   ]
 }
