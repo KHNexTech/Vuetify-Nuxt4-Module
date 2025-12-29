@@ -1,6 +1,6 @@
 {
   "name": "vuetify-nuxt4-module",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Zero-config Vuetify 3 module for Nuxt 4 with performance optimizations.",
   "repository": {
     "type": "git",

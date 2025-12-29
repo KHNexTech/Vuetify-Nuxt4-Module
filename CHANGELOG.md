@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.2.3
+
+[compare changes](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/compare/v1.2.2...v1.2.3)
+
+### 🏡 Chore
+
+- **docs:** Add SECURITY.md with detailed security policy and reporting process ([96faf50](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/96faf50))
+- Update email in SECURITY.md and improve CI/CD configurations ([fd83fae](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/fd83fae))
+- **ci:** Support multiple package-lock.json files in cache configuration ([9597257](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/9597257))
+- **ci:** Remove cache-dependency-path and add debug steps in CI workflow ([218dfed](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/218dfed))
+- **ci:** Remove npm cache configuration from workflows ([e3dbe43](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/e3dbe43))
+- **ci:** Remove npm cache configuration from workflows ([1c32311](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/1c32311))
+- **ci:** Add Nuxt preparation step to CI workflow ([a95a633](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/a95a633))
+- **ci:** Add Nuxt preparation step to CI workflow ([4920e42](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/4920e42))
+- **ci:** Update workflows to remove npm cache and switch to `npm install` ([01d1618](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/01d1618))
+- **ci:** Update Node.js matrix in CI workflow and remove unused file ([e06984e](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/e06984e))
+- **ci:** Replace `npm ci` with `npm install` in CI workflow ([f7140c2](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/f7140c2))
+- **ci:** Allow workflow dispatch trigger for release step ([44ec39a](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/44ec39a))
+- **package:** Update homepage URL in package.json ([322f75d](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/322f75d))
+
+### ❤️ Contributors
+
+- Chenhai <chenhaitry64@gmail.com>
+
 ## v1.2.2
 
 [compare changes](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/compare/v1.2.1...v1.2.2)
