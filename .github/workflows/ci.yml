@@ -20,7 +20,7 @@ jobs:
   test:
     name: Test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     strategy:
       fail-fast: false
@@ -28,36 +28,39 @@ jobs:
         node-version: [18, 20, 22]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Prepare Nuxt (generate .nuxt/tsconfig.json)
-        run: npx nuxi prepare
+      - name: Prepare (generate playground .nuxt/tsconfig)
+        run: npm run dev:prepare
 
-      - name: Run linter
+      - name: Lint
         run: npm run lint
 
-      - name: Run tests
+      - name: Unit tests
         run: npm run test
 
       - name: Build playground
         run: npm run dev:build
 
-      - name: Type check
+      - name: Type check (root + playground)
         run: npm run test:types
 
   release:
     name: Publish to npm
     needs: test
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     if: startsWith(github.ref, 'refs/tags/v')
 
     permissions:
@@ -65,7 +68,8 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout (full history for tags/changelog tooling)
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -74,14 +78,16 @@ jobs:
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build module
+      - name: Build module (prepack)
         run: npm run prepack
 
-      - name: Show package contents (dry run)
+      - name: Verify package contents (dry run)
         run: npm publish --dry-run
 
       - name: Publish
