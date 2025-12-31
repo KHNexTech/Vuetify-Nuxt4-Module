@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.2.4
+
+[compare changes](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/compare/v1.2.3...v1.2.4)
+
+### 🏡 Chore
+
+- **playground:** Replace icon.png with SVG and update styles ([68cadbf](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/68cadbf))
+- **playground:** Remove custom Vuetify plugin and i18n configuration files ([b4e20ff](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/commit/b4e20ff))
+
+### ❤️ Contributors
+
+- Chenhai <chenhaitry64@gmail.com>
+
 ## v1.2.3
 
 [compare changes](https://github.com/KHNexTech/Vuetify-Nuxt4-Module/compare/v1.2.2...v1.2.3)
