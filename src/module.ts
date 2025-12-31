@@ -12,6 +12,8 @@ import type { Nuxt } from '@nuxt/schema'
 import defu from 'defu'
 import { getIconCssPath } from './utils'
 
+export * from './types'
+
 const MODULE_NAME = 'nuxt-vuetify-module'
 
 export default defineNuxtModule<ModuleOptions>({
@@ -452,4 +454,4 @@ async function setupAutoImport(
 }
 
 // Export types
-export type { ModuleOptions, VuetifyHooks, VuetifyHookContext } from './types'
+export type { ModuleOptions, VuetifyHookContext } from './types'

@@ -174,14 +174,6 @@ export interface ModuleOptions {
   persistence?: PersistenceConfig
 }
 
-// Runtime config type for plugin access
-export interface VuetifyRuntimeConfig {
-  vuetifyOptions: ModuleOptions['vuetifyOptions']
-  persistence?: PersistenceConfig
-  i18n?: ModuleOptions['i18n']
-  lazyComponents?: ModuleOptions['lazyComponents']
-}
-
 // ============================================
 // Module Declarations
 // ============================================
