@@ -13,15 +13,8 @@ import {
   resolvePersistenceConfig,
   setPersistedTheme,
   isI18nEnabled,
-  createI18nLocaleAdapter,
-  registerLazyComponents,
+  registerLazyComponents, tryCreateI18nLocaleAdapter,
 } from '../../utils'
-import type { I18n } from 'vue-i18n'
-
-// Extended NuxtApp interface for i18n
-interface NuxtAppWithI18n extends NuxtApp {
-  $i18n?: I18n
-}
 
 export default defineNuxtPlugin({
   name: 'vuetify',
@@ -41,7 +34,7 @@ export default defineNuxtPlugin({
     // Resolve persistence config
     const persistenceConfig = resolvePersistenceConfig(persistenceOptions)
 
-    // Get persisted theme BEFORE creating Vuetify (works on both SSR and client)
+    // Get a persisted theme BEFORE creating Vuetify (works on both SSR and client)
     let initialTheme = config.theme?.defaultTheme ?? 'light'
 
     if (persistenceConfig.enabled && persistenceConfig.storage === 'cookie') {
@@ -80,25 +73,16 @@ export default defineNuxtPlugin({
     if (dateConfig) vuetifyOptions.date = dateConfig
     if (iconConfig) vuetifyOptions.icons = iconConfig
 
-    // Handle i18n adapter - only on client side to avoid hydration mismatch
+    // i18n Integration (supports @nuxtjs/i18n and vue-i18n)
     let i18nLocaleAdapter
     if (isI18nEnabled(i18nOption)) {
-      try {
-        // Get i18n instance from nuxt app
-        // @nuxtjs/i18n provides it as $i18n
-        const appWithI18n = nuxtApp as NuxtAppWithI18n
-        const i18nInstance = appWithI18n.$i18n
-        if (i18nInstance) {
-          i18nLocaleAdapter = await createI18nLocaleAdapter(i18nInstance)
-        }
-      }
-      catch (error) {
-        logger.debug('i18n adapter creation skipped:', error)
-      }
+      i18nLocaleAdapter = await tryCreateI18nLocaleAdapter(nuxtApp as NuxtApp)
     }
-    // Apply locale config - i18n adapter takes precedence over default locale config
+    // Apply locale config - i18n adapter takes precedence
     if (i18nLocaleAdapter) {
-      vuetifyOptions.locale = i18nLocaleAdapter
+      vuetifyOptions.locale = {
+        adapter: i18nLocaleAdapter,
+      }
     }
     else if (localeConfig) {
       vuetifyOptions.locale = localeConfig
@@ -126,7 +110,7 @@ export default defineNuxtPlugin({
       )
     }
 
-    // Handle theme persistence watcher (client-only)
+    // Theme Persistence (Client-Only)
     if (import.meta.client && persistenceConfig.enabled) {
       // Watch for theme changes and persist them
       watch(

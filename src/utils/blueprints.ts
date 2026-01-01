@@ -1,5 +1,5 @@
 import type { Blueprint } from 'vuetify'
-import type { BlueprintName } from '../types'
+import type { BlueprintName } from '../node'
 
 let blueprintsCache: typeof import('vuetify/blueprints') | null = null
 

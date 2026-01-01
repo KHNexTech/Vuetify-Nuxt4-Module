@@ -1,6 +1,6 @@
 import type { VuetifyOptions, createVuetify } from 'vuetify'
-import type { ModuleOptions } from './options'
 import type { HookResult } from '@nuxt/schema'
+import type { ModuleOptions } from '../module'
 
 export interface VuetifyHookContext {
   vuetifyOptions: VuetifyOptions
@@ -13,4 +13,7 @@ export interface ModuleRuntimeHooks {
   'vuetify:configuration': (context: VuetifyHookContext) => HookResult
   'vuetify:ready': (vuetify: ReturnType<typeof createVuetify>) => HookResult
 }
+export type VuetifyHooks = ModuleRuntimeHooks & ModuleHooks
+export type VuetifyHookName = keyof VuetifyHooks
+
 export {}

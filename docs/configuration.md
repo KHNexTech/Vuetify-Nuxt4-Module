@@ -752,7 +752,7 @@ The module provides full TypeScript support. Types are auto-generated in `.nuxt/
 ### Extending Types
 
 ```typescript
-// types/vuetify.d.ts
+// types/node.d.ts
 import 'vuetify'
 
 declare module 'vuetify' {

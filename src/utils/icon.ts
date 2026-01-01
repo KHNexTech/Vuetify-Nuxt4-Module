@@ -1,8 +1,8 @@
 import type { IconAliases, IconOptions, IconSet } from 'vuetify'
 import { logger } from './logger'
-import type { IconSetName, IconConfig } from '../types'
+import type { IconSetName, IconsConfig, ResolvedIconConfig } from '../node'
 
-export type { IconSetName, IconConfig } from '../types'
+export type { IconSetName, IconsConfig } from '../node'
 /**
  * Load icon set based on configuration
  */
@@ -20,6 +20,7 @@ export async function loadIconSet(setName: IconSetName): Promise<IconSet | undef
       case 'md':
         return (await import('vuetify/iconsets/md')).md
       default:
+        logger.warn(`Unknown icon set: ${name}`)
         return undefined
     }
   }
@@ -46,6 +47,7 @@ export async function loadIconAliases(setName: IconSetName): Promise<IconAliases
       case 'md':
         return (await import('vuetify/iconsets/md')).aliases
       default:
+        logger.warn(`Unknown icon aliases for icon set: ${name}`)
         return undefined
     }
   }
@@ -73,11 +75,9 @@ export async function resolveMdiSvgAliases(
       // Access the icon path, skipping 'default' export
       if (iconName in mdiModule && iconName !== 'default') {
         const iconPath = (mdiModule as unknown as Record<string, string>)[iconName]
-        if (!iconPath) {
-          logger.warn(`MDI icon "${iconName}" not found for alias "${aliasName}" for iconPath`)
-          continue
+        if (iconPath) {
+          resolved[aliasName] = iconPath
         }
-        resolved[aliasName] = iconPath
       }
       else {
         logger.warn(`MDI icon "${iconName}" not found for alias "${aliasName}"`)
@@ -95,7 +95,7 @@ export async function resolveMdiSvgAliases(
  * Create Vuetify icon configuration
  */
 export async function createIconConfig(
-  config?: IconConfig,
+  config?: IconsConfig,
 ): Promise<IconOptions> {
   const defaultSet = config?.defaultSet ?? 'mdi'
   const isSvgSet = defaultSet.includes('svg')

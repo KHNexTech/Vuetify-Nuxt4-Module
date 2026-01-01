@@ -1,5 +1,5 @@
-import type { LocaleOptions, LocaleMessages, RtlOptions } from 'vuetify'
-import type { ModuleOptions } from '../types'
+import type { LocaleMessages } from 'vuetify'
+import type { LocaleConfig, ResolvedLocaleConfig } from '../node'
 
 // Map of available locales - only import what's needed
 const localeImportMap: Record<string, () => Promise<{ default: LocaleMessages }>> = {
@@ -10,10 +10,12 @@ const localeImportMap: Record<string, () => Promise<{ default: LocaleMessages }>
   zhHans: () => import('vuetify/locale').then(m => ({ default: m.zhHans })),
   zhHant: () => import('vuetify/locale').then(m => ({ default: m.zhHant })),
 }
-
+/**
+ * Create locale configuration for Vuetify
+ */
 export async function createLocaleConfig(
-  options?: ModuleOptions['vuetifyOptions']['locale'],
-): Promise<LocaleOptions & RtlOptions> {
+  options?: LocaleConfig,
+): Promise<ResolvedLocaleConfig> {
   const locale = options?.locale ?? 'en'
   const fallback = options?.fallback ?? 'en'
 
@@ -47,4 +49,18 @@ export async function createLocaleConfig(
     messages,
     rtl: options?.rtl ?? {},
   }
+}
+
+/**
+ * Check if a locale is RTL
+ */
+export function isRtlLocale(locale: string, rtlConfig?: Record<string, boolean>): boolean {
+  // Check custom RTL config first
+  if (rtlConfig && locale in rtlConfig && rtlConfig[locale]) {
+    return rtlConfig[locale]
+  }
+
+  // Default RTL locales
+  const defaultRtlLocales = ['ar', 'he', 'fa', 'ur', 'yi', 'ps', 'sd']
+  return defaultRtlLocales.includes(locale)
 }

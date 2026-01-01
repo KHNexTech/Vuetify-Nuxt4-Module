@@ -115,7 +115,7 @@ vuetify-nuxt4-module/
 │   │       └── vuetify.scss   # Custom styles
 │   ├── types/
 │   │   ├── index.ts           # Type exports
-│   │   ├── options.ts         # Module options types
+│   │   ├── module.ts         # Module options types
 │   │   ├── hooks.ts           # Hook types
 │   │   ├── icon.ts            # Icon types
 │   │   └── runtime.d.ts       # Runtime type declarations

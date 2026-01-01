@@ -1,38 +1,44 @@
+// =============================================================================
+// Runtime Utilities for Vuetify Plugin
+// =============================================================================
+
+// Re-export all types
+export * from '../types'
+
+// Logger
 export { logger } from './logger'
-export { callVuetifyHook, onVuetifyHook, offVuetifyHook } from './hooks'
-export {
-  createIconConfig,
-  loadIconSet,
-  loadIconAliases,
-  resolveMdiSvgAliases,
-  getIconCssPath,
-} from './icon'
-export { createLocaleConfig } from './locale'
+
+// Hooks
+export { callVuetifyHook } from './hooks'
+
+// Icon Configuration
+export { createIconConfig, loadIconSet, getIconCssPath } from './icon'
+
+// Locale Configuration
+export { createLocaleConfig, isRtlLocale } from './locale'
+
+// Date Adapter
 export { createDateConfig } from './date'
+
+// Blueprints
 export { loadBlueprint } from './blueprints'
+
+// i18n Adapter
 export {
-  createI18nLocaleAdapter,
-  hasI18nModule,
   isI18nEnabled,
+  hasVueI18n,
+  getI18nInstance,
+  createI18nLocaleAdapter,
   tryCreateI18nLocaleAdapter,
 } from './i18n'
-export {
-  createLazyComponent,
-  registerLazyComponents,
-  type LazyComponentName,
-  type LazyComponentOptions,
-} from './lazy'
+
+// Lazy Loading
+export { createLazyComponent, registerLazyComponents } from './lazy'
+
+// Persistence
 export {
   resolvePersistenceConfig,
   getPersistedTheme,
   setPersistedTheme,
   clearPersistedTheme,
 } from './persistence'
-export {
-  generatePreloadLinks,
-  injectPreloadHints,
-} from './preload'
-
-export type { VuetifyHookName } from './hooks'
-export type { ResolvedPersistenceConfig } from './persistence'
-export type { IconSetName, IconConfig } from './icon'

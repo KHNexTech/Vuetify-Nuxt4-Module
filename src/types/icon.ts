@@ -1,6 +1,8 @@
-export type IconSetName = 'mdi' | 'mdi-svg' | 'fa' | 'fa-svg' | 'md' | 'custom'
+import type { IconOptions } from 'vuetify/framework'
 
-export interface IconConfig {
+export type IconSetName = 'mdi' | 'mdi-svg' | 'fa' | 'fa-svg' | 'fa4' | 'md' | 'custom'
+
+export interface IconsConfig {
   defaultSet?: IconSetName
   aliases?: Record<string, string>
   sets?: Record<string, IconSetName>
@@ -13,3 +15,5 @@ export interface IconConfig {
     }
   }
 }
+
+export type ResolvedIconConfig = IconOptions

@@ -1,7 +1,6 @@
 import type { NuxtApp } from '#app'
-import type { VuetifyHooks } from '../types'
-
-export type VuetifyHookName = keyof VuetifyHooks
+import type { VuetifyHookName, VuetifyHooks } from '../node'
+import { logger } from './logger'
 
 // Extract the first parameter type from a hook function
 type HookPayload<K extends VuetifyHookName> = Parameters<VuetifyHooks[K]>[0]
@@ -14,12 +13,17 @@ type HookRemover = <T>(name: string, callback: (arg: T) => void | Promise<void>)
 /**
  * Call a Vuetify hook with proper typing
  */
-export function callVuetifyHook<K extends VuetifyHookName>(
+export async function callVuetifyHook<K extends VuetifyHookName>(
   nuxtApp: NuxtApp,
   name: K,
   payload: HookPayload<K>,
 ): Promise<void> {
-  return (nuxtApp.callHook as HookCaller)(name, payload)
+  try {
+    await (nuxtApp.callHook as HookCaller)(name, payload)
+  }
+  catch (error) {
+    logger.debug(`Hook ${name} error:`, error)
+  }
 }
 
 /**

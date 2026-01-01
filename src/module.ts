@@ -6,13 +6,99 @@ import {
   useLogger,
   extendViteConfig,
   addVitePlugin,
+  hasNuxtModule,
 } from '@nuxt/kit'
-import type { ModuleOptions } from './types'
-import type { Nuxt } from '@nuxt/schema'
 import defu from 'defu'
-import { getIconCssPath } from './utils'
+import type { Nuxt } from '@nuxt/schema'
+import type * as Components from 'vuetify/components'
+import type * as Directives from 'vuetify/directives'
+import {
+  getIconCssPath,
+  type I18nConfig,
+  type LazyComponentsConfig,
+  type ModuleHooks,
+  type ModuleRuntimeHooks,
+  type PersistenceConfig,
+  type VuetifyModuleOptions,
+} from './utils'
 
-export * from './types'
+export interface ModuleOptions {
+  /**
+   * Vuetify configuration options
+   */
+  vuetifyOptions: VuetifyModuleOptions
+
+  /**
+   * Auto-import Vuetify composables
+   * @default true
+   */
+  importComposables?: boolean
+
+  /**
+   * Prefix Vuetify composables with 'V' to avoid conflicts
+   * @default false
+   */
+  prefixComposables?: boolean
+  /**
+   * Lazy load heavy components
+   * @default false
+   */
+  lazyComponents?: boolean | LazyComponentsConfig
+
+  /**
+   * Transform asset URLs in Vuetify components
+   * @default true
+   */
+  transformAssetUrls?: boolean
+
+  /**
+   * Include Vuetify styles
+   * @default true
+   */
+  styles?: true | 'none' | 'sass' | {
+    configFile: string
+  }
+
+  /**
+   * Enable automatic tree-shaking via vite-plugin-vuetify
+   * Vuetify components and directives will be automatically imported
+   * Include lab components when autoImport:  { labs: true }
+   * @default true
+   */
+  autoImport?: boolean | {
+    labs?: boolean
+    ignore?: (keyof typeof Components | keyof typeof Directives)[]
+  }
+
+  /**
+   * vue-i18n integration (works with @nuxtjs/i18n or vue-i18n)
+   * - true: auto-detect @nuxtjs/i18n, enable if found
+   * - false: disable i18n integration
+   * - { adapter: true }: force enable (user must install vue-i18n)
+   * - { adapter: false }: disable adapter
+   * @default true (auto-detect)
+   */
+  i18n?: boolean | I18nConfig
+
+  /**
+   * Theme persistence configuration
+   * @default { enabled: true, storage: 'cookie', key: 'nuxt-vuetify-theme' }
+   */
+  persistence?: PersistenceConfig
+
+  /**
+   * Preload critical assets
+   * @default { fonts: false, criticalCSS: true }
+   */
+  preload?: PreloadConfig
+}
+
+export interface PreloadConfig {
+  fonts?: boolean
+  criticalCSS?: boolean
+}
+
+export type { ModuleHooks, ModuleRuntimeHooks } from './types/hooks'
 
 const MODULE_NAME = 'nuxt-vuetify-module'
 
@@ -60,20 +146,44 @@ export default defineNuxtModule<ModuleOptions>({
     logger.info('Setting up Vuetify module...')
 
     // Call register hook to allow programmatic configuration
-    await nuxt.callHook('vuetify:register', (additionalOptions: Partial<ModuleOptions>) => {
-      options = defu(additionalOptions, options) as ModuleOptions
-    })
+    // await nuxt.callHook('vuetify:register', (additionalOptions: Partial<ModuleOptions>) => {
+    //   options = defu(additionalOptions, options) as ModuleOptions
+    // })
+
+    // Determine i18n setting:
+    // - false: disabled
+    // - true: auto-detect (enable if @nuxtjs/i18n found)
+    // - { adapter: true }: force enable
+    // - { adapter: false }: disabled
+    let i18nEnabled: boolean | { adapter: boolean } = false
+
+    if (options.i18n === false) {
+      // Explicitly disabled
+      i18nEnabled = false
+    }
+    else if (options.i18n === true) {
+      // Auto-detect: only enable if @nuxtjs/i18n is installed
+      i18nEnabled = hasNuxtModule('@nuxtjs/i18n')
+    }
+    else if (typeof options.i18n === 'object') {
+      // User explicitly configured
+      i18nEnabled = options.i18n.adapter !== false ? { adapter: true } : false
+    }
 
     // Add runtime config
     nuxt.options.runtimeConfig.public.vuetify = {
       vuetifyOptions: options.vuetifyOptions,
       persistence: options.persistence,
-      i18n: options.i18n,
+      i18n: i18nEnabled,
       lazyComponents: options.lazyComponents,
     }
 
     // Transpile vuetify
     nuxt.options.build.transpile.push('vuetify')
+    // Type Declarations
+    nuxt.hook('prepare:types', ({ references }) => {
+      references.push({ types: 'vuetify' })
+    })
 
     // Add plugin
     addPlugin({
@@ -100,8 +210,10 @@ export default defineNuxtModule<ModuleOptions>({
         name: 'offVuetifyHook',
         from: resolve('./utils/hooks'),
       },
-      { name: 'createLazyComponent',
-        from: resolve('./utils/lazy') },
+      {
+        name: 'createLazyComponent',
+        from: resolve('./utils/lazy'),
+      },
     ])
 
     // Setup Vuetify auto-import with vite-plugin-vuetify
@@ -331,6 +443,7 @@ export default defineNuxtModule<ModuleOptions>({
     logger.success('Vuetify module setup complete')
   },
 })
+
 /*
 * Function - Add Vuetify styles
 */
@@ -351,6 +464,7 @@ function addStyles(
     nuxt.options.css.unshift(cssToAdd)
   }
 }
+
 /*
 * Function - Add icon CSS based on an icon set
 */
@@ -362,6 +476,7 @@ function addIconStyles(nuxt: Nuxt, icons?: ModuleOptions['vuetifyOptions']['icon
     nuxt.options.css.push(css)
   }
 }
+
 /*
 * Function - Add Vuetify composables with an optional prefix
 */
@@ -453,5 +568,28 @@ async function setupAutoImport(
   }
 }
 
-// Export types
-export type { ModuleOptions, VuetifyHookContext } from './types'
+// =============================================================================
+// Type Augmentations
+// =============================================================================
+
+declare module '@nuxt/schema' {
+  interface NuxtConfig {
+    vuetify?: Partial<ModuleOptions>
+  }
+  interface NuxtOptions {
+    vuetify?: ModuleOptions
+  }
+  interface NuxtHooks extends ModuleHooks {}
+  interface RuntimeNuxtHooks extends ModuleRuntimeHooks {}
+}
+
+declare module 'nuxt/schema' {
+  interface NuxtConfig {
+    vuetify?: Partial<ModuleOptions>
+  }
+  interface NuxtOptions {
+    vuetify?: ModuleOptions
+  }
+  interface NuxtHooks extends ModuleHooks {}
+  interface RuntimeNuxtHooks extends ModuleRuntimeHooks {}
+}

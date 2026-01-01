@@ -1,14 +1,22 @@
-const PREFIX = '[nuxt:vuetify]'
+import type { Logger } from '../types'
 
-export const logger = {
-  info: (...args: unknown[]) => console.info(PREFIX, ...args),
-  warn: (...args: unknown[]) => console.warn(PREFIX, ...args),
-  error: (...args: unknown[]) => console.error(PREFIX, ...args),
-  success: (...args: unknown[]) => console.log('✅', PREFIX, ...args),
-  debug: (...args: unknown[]) => {
+const PREFIX = '[nuxt:vuetify]'
+export const logger: Logger = {
+  debug: (...args: unknown[]): void => {
     if (import.meta.dev) {
-      console.debug(PREFIX, ...args)
+      console.log(PREFIX, ...args)
     }
   },
-  log: (...args: unknown[]) => console.log(PREFIX, ...args),
+  info: (...args: unknown[]): void => {
+    console.log(PREFIX, ...args)
+  },
+  success: (...args: unknown[]): void => {
+    console.log('[vuetify] ✓', ...args)
+  },
+  warn: (...args: unknown[]): void => {
+    console.warn(PREFIX, ...args)
+  },
+  error: (...args: unknown[]): void => {
+    console.error(PREFIX, ...args)
+  },
 }

@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['../src/module', '@nuxtjs/i18n'],
+  modules: ['@nuxtjs/i18n', '../src/module'],
   ssr: true,
   devtools: { enabled: true },
   // Performance settings
@@ -22,12 +22,6 @@ export default defineNuxtConfig({
           experimentalMinChunkSize: 10000,
         },
       },
-    },
-  },
-  // Hook example in config
-  hooks: {
-    'vuetify:before-create': ({ vuetifyOptions }) => {
-      console.log('Vuetify options:', vuetifyOptions)
     },
   },
   i18n: {
@@ -89,9 +83,7 @@ export default defineNuxtConfig({
     autoImport: {
       labs: false,
     },
-    styles: {
-      configFile: 'assets/vuetify.scss',
-    },
+    styles: true,
 
     persistence: {
       enabled: true,

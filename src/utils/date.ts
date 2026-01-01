@@ -1,8 +1,5 @@
-import type { VuetifyOptions } from 'vuetify'
-import type { DateAdapterName } from '../types'
+import type { DateAdapterName, DateConfig } from '../node'
 import { logger } from './logger'
-
-type DateConfig = VuetifyOptions['date']
 
 const adapterPackages: Record<DateAdapterName, string[]> = {
   'vuetify': ['vuetify'],
@@ -43,14 +40,11 @@ export async function createDateConfig(adapterName: DateAdapterName = 'vuetify')
         break
       }
       case 'vuetify':
-      default: {
-        // const { VuetifyDateAdapter } = await import('vuetify/date/adapters/vuetify')
-        // config = { adapter: VuetifyDateAdapter }
-
-        // Don't dynamically import - use static to avoid warning
-        // The VuetifyDateAdapter is already included in a vuetify bundle
-        return undefined // Let Vuetify use its default
-      }
+        // Use Vuetify's built-in adapter
+        return undefined
+      default:
+        logger.warn(`Unknown date adapter: ${adapterName}`)
+        return undefined
     }
 
     adapterCache.set(adapterName, config)

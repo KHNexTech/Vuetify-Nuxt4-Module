@@ -1,16 +1,8 @@
-import type { PersistenceConfig } from '../types'
+import type { PersistenceConfig, ResolvedPersistenceConfig } from '../node'
 
-export interface ResolvedPersistenceConfig {
-  enabled: boolean
-  key: string
-  storage: 'cookie' | 'localStorage' | 'sessionStorage'
-  cookieOptions: {
-    maxAge: number
-    path: string
-    sameSite: 'strict' | 'lax' | 'none'
-  }
-}
-
+/**
+ * Resolve persistence configuration with defaults
+ */
 export function resolvePersistenceConfig(
   options?: PersistenceConfig,
 ): ResolvedPersistenceConfig {
@@ -28,7 +20,7 @@ export function resolvePersistenceConfig(
 /**
  * Get persisted theme from storage
  * Note: For SSR with cookies, use useCookie() from #app instead
- * This function only works on client-side
+ * This function only works on the client-side
  */
 export function getPersistedTheme(config: ResolvedPersistenceConfig): string | null {
   if (!config.enabled || !import.meta.client) return null
@@ -49,11 +41,11 @@ export function getPersistedTheme(config: ResolvedPersistenceConfig): string | n
   }
 }
 /**
- * Set persisted theme to storage
+ * Set a persisted theme to storage
  * Note: For SSR with cookies, also update via useCookie() from #app
  */
 export function setPersistedTheme(config: ResolvedPersistenceConfig, theme: string): void {
-  if (!config.enabled || !import.meta.client) return
+  if (!config.enabled || !import.meta.client || typeof window === 'undefined') return
 
   try {
     switch (config.storage) {

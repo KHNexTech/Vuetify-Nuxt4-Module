@@ -767,7 +767,7 @@ The module provides full TypeScript support with auto-generated types.
 ### Type Augmentation
 
 ```typescript
-// types/vuetify.d.ts
+// types/node.d.ts
 declare module 'vuetify' {
   interface ThemeDefinition {
     // Add custom theme properties
