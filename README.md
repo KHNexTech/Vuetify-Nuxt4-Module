@@ -318,7 +318,7 @@ export default defineNuxtConfig({
 
   i18n: {
     locales: [
-      { code: 'en', file: 'en.json', name: 'English' },
+      { code: 'en', file: 'en.js', name: 'English' },
       { code: 'km', file: 'km.json', name: 'ខ្មែរ' },
       { code: 'ar', file: 'ar.json', name: 'العربية', dir: 'rtl' },
     ],
@@ -337,7 +337,7 @@ export default defineNuxtConfig({
 Create locale files with Vuetify translations under `$vuetify` key:
 
 ```json
-// locales/en.json
+// locales/en.js
 {
   "welcome": "Welcome",
   "$vuetify": {

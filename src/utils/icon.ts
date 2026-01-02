@@ -1,8 +1,8 @@
 import type { IconAliases, IconOptions, IconSet } from 'vuetify'
 import { logger } from './logger'
-import type { IconSetName, IconsConfig, ResolvedIconConfig } from '../node'
+import type { IconSetName, IconsConfig } from '../types'
 
-export type { IconSetName, IconsConfig } from '../node'
+export type { IconSetName, IconsConfig } from '../types'
 /**
  * Load icon set based on configuration
  */

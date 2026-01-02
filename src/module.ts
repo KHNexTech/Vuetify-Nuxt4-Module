@@ -16,8 +16,8 @@ import {
   getIconCssPath,
   type I18nConfig,
   type LazyComponentsConfig,
-  type ModuleHooks,
-  type ModuleRuntimeHooks,
+  // type ModuleHooks,
+  // type ModuleRuntimeHooks,
   type PersistenceConfig,
   type VuetifyModuleOptions,
 } from './utils'
@@ -579,8 +579,6 @@ declare module '@nuxt/schema' {
   interface NuxtOptions {
     vuetify?: ModuleOptions
   }
-  interface NuxtHooks extends ModuleHooks {}
-  interface RuntimeNuxtHooks extends ModuleRuntimeHooks {}
 }
 
 declare module 'nuxt/schema' {
@@ -590,6 +588,4 @@ declare module 'nuxt/schema' {
   interface NuxtOptions {
     vuetify?: ModuleOptions
   }
-  interface NuxtHooks extends ModuleHooks {}
-  interface RuntimeNuxtHooks extends ModuleRuntimeHooks {}
 }

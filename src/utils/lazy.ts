@@ -1,20 +1,6 @@
 import type { App, Component, AsyncComponentLoader } from 'vue'
-import type { LazyComponentName } from '../node'
+import type { LazyComponentName } from '../types'
 import { logger } from './logger'
-
-// Map of heavy Vuetify components
-const heavyComponents = {
-  VDataTable: () => import('vuetify/components/VDataTable').then(m => ({ default: m.VDataTable })),
-  VDataTableServer: () => import('vuetify/components/VDataTable').then(m => ({ default: m.VDataTableServer })),
-  VDataTableVirtual: () => import('vuetify/components/VDataTable').then(m => ({ default: m.VDataTableVirtual })),
-  VCalendar: () => import('vuetify/components/VCalendar').then(m => ({ default: m.VCalendar })),
-  VDatePicker: () => import('vuetify/components/VDatePicker').then(m => ({ default: m.VDatePicker })),
-  VTimePicker: () => import('vuetify/components/VTimePicker').then(m => ({ default: m.VTimePicker })),
-  VColorPicker: () => import('vuetify/components/VColorPicker').then(m => ({ default: m.VColorPicker })),
-  VVirtualScroll: () => import('vuetify/components/VVirtualScroll').then(m => ({ default: m.VVirtualScroll })),
-  VInfiniteScroll: () => import('vuetify/components/VInfiniteScroll').then(m => ({ default: m.VInfiniteScroll })),
-  VSparkline: () => import('vuetify/components/VSparkline').then(m => ({ default: m.VSparkline })),
-} as const
 
 /**
  * Create a lazy-loaded component
