@@ -18,7 +18,7 @@ import {
 
 export default defineNuxtPlugin({
   name: 'vuetify',
-  enforce: 'pre',
+  // enforce: 'pre',
   parallel: true,
   async setup(nuxtApp) {
     const runtimeConfig = useRuntimeConfig().public.vuetify as VuetifyRuntimeConfig

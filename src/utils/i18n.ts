@@ -57,7 +57,7 @@ export function getI18nInstance(nuxtApp: NuxtApp): unknown | undefined {
  * @returns The locale adapter or undefined if creation fails
  *
  * @example
- * ```typescript
+ * ```TypeScript
  * // With @nuxtjs/i18n
  * const adapter = await createI18nLocaleAdapter(nuxtApp.$i18n)
  *
@@ -67,7 +67,7 @@ export function getI18nInstance(nuxtApp: NuxtApp): unknown | undefined {
  * const adapter = await createI18nLocaleAdapter(i18n)
  * ```
  */
-export async function createI18nLocaleAdapter(i18n: unknown): Promise<I18nLocaleAdapter | undefined> {
+export async function createI18nLocaleAdapter(i18n: any): Promise<I18nLocaleAdapter | undefined> {
   if (!i18n) {
     logger.debug('No i18n instance provided')
     return undefined
@@ -82,13 +82,18 @@ export async function createI18nLocaleAdapter(i18n: unknown): Promise<I18nLocale
 
     const { createVueI18nAdapter } = vueI18nAdapter
     const { useI18n } = vueI18n
-
-    return createVueI18nAdapter({
-      i18n: i18n as Parameters<typeof createVueI18nAdapter>[0]['i18n'],
-      useI18n,
+    if (!i18n?.global) {
+      return createVueI18nAdapter(<Parameters<typeof createVueI18nAdapter>[0]>{
+        i18n: { global: i18n },
+        useI18n,
+      }) as I18nLocaleAdapter
+    }
+    return createVueI18nAdapter(<Parameters<typeof createVueI18nAdapter>[0]>{
+      i18n: i18n,
     }) as I18nLocaleAdapter
   }
   catch (error) {
+    console.log(error)
     logger.debug(
       'Failed to create i18n adapter. Install @nuxtjs/i18n or vue-i18n to enable i18n support:',
       error,
@@ -109,10 +114,8 @@ export async function tryCreateI18nLocaleAdapter(
 ): Promise<I18nLocaleAdapter | undefined> {
   const i18n = getI18nInstance(nuxtApp)
 
-  console.log(i18n)
-
   if (!i18n) {
-    logger.debug('No i18n instance found on nuxtApp q')
+    logger.debug('No i18n instance found on nuxtApp')
     return undefined
   }
 

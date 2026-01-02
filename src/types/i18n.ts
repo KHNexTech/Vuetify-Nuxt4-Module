@@ -1,5 +1,4 @@
-import type { Ref } from 'vue'
-import type { LocaleInstance, LocaleMessages } from 'vuetify'
+import type { LocaleInstance } from 'vuetify'
 
 export interface I18nConfig {
   /**
@@ -53,8 +52,5 @@ export interface I18nConfig {
  */
 
 export interface I18nLocaleAdapter extends LocaleInstance {
-  messages: Ref<LocaleMessages>
-  current: Ref<string>
-  fallback: Ref<string>
   t: (key: string, ...params: unknown[]) => string
 }
